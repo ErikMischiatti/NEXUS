@@ -20,6 +20,13 @@ This repository currently contains the documentation and architecture foundation
 
 There is no implemented runtime, plugin loader, robot adapter, operator UI, or mission-control functionality in this repository yet.
 
+## Documentation
+
+- [System Design](docs/system-design.md)
+- [Architecture](docs/architecture.md)
+- [Vision](docs/vision.md)
+- [Roadmap](docs/roadmap.md)
+
 ## Core Design Principles
 
 - **Plugin-first**: major platform features should be delivered as plugins with clear extension points.
