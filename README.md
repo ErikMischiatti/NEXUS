@@ -10,9 +10,15 @@ NEXUS is intended to provide a modular foundation for this problem: a robot-agno
 
 ## Vision
 
-NEXUS aims to become an IDE-like operations environment for robotics teams. Instead of treating the control station as a fixed application, NEXUS treats the platform as a shell where robots, payloads, data sources, mission tools, and operator workflows can be composed through well-defined extension points.
+NEXUS aims to become an IDE-like operations environment for robotics teams. Instead of treating the control station as a fixed application, the planned platform will provide a shell where robots, payloads, data sources, mission tools, and operator workflows can be composed through well-defined extension points.
 
 The project is early-stage. This repository currently defines the initial project foundation, scope, and planned architecture. Runtime components are not implemented yet.
+
+## Repository Status
+
+This repository currently contains the documentation and architecture foundation for NEXUS only. The tracked source directories are placeholders for future core, UI, plugin, adapter, example, and test work.
+
+There is no implemented runtime, plugin loader, robot adapter, operator UI, or mission-control functionality in this repository yet.
 
 ## Core Design Principles
 
@@ -35,6 +41,17 @@ The planned architecture is organized around a small core and extensible modules
 - **UI Shell**: shared operator interface that hosts plugin-provided views and controls.
 - **Plugins**: feature modules such as telemetry, maps, missions, payload control, diagnostics, and domain-specific tools.
 - **Workspaces**: saved operational layouts, connected systems, plugin state, and mission context.
+
+## Non-goals
+
+NEXUS is not currently:
+
+- a flight controller
+- an autopilot
+- a robotics middleware
+- a replacement for every specialized control station
+
+Specialized systems such as autopilots, robotics middleware, and domain-specific control tools are expected to remain important. NEXUS is intended to become an integration and operations layer around those systems, not a replacement for their core responsibilities.
 
 ## Early Roadmap
 

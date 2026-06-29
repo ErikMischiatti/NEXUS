@@ -35,11 +35,37 @@ The Adapter Layer is the planned integration boundary between NEXUS and external
 
 Potential adapters include ROS, MQTT, MAVLink, simulator integrations, hardware interfaces, payload APIs, and custom mission systems.
 
+Example adapter boundaries may include:
+
+- A ROS adapter that maps selected topics, services, and actions into NEXUS telemetry events, command requests, and capability declarations.
+- An MQTT adapter that maps broker topics into normalized telemetry, alerts, system events, and command channels.
+
+These examples describe intended boundaries only. They do not define a runtime API yet.
+
 ## Capability Model
 
 The Capability Model is intended to describe what a connected robot, payload, sensor, or service can do. Instead of assuming a fixed vehicle type, plugins should inspect capabilities and adapt their behavior accordingly.
 
 Example capability categories may include movement, localization, telemetry, imaging, manipulation, mission execution, payload control, health reporting, and command support.
+
+A future capability declaration might look conceptually like this:
+
+```yaml
+system:
+  id: field-robot-01
+  type: ugv
+  capabilities:
+    - name: telemetry.position
+      provides: [latitude, longitude, altitude, heading]
+    - name: command.velocity
+      accepts: [linear_x, angular_z]
+    - name: payload.camera
+      provides: [image_stream, snapshot]
+    - name: health.status
+      provides: [battery, link_quality, fault_state]
+```
+
+This is an illustrative shape, not a committed schema.
 
 ## UI Shell
 

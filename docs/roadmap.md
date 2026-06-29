@@ -6,38 +6,88 @@ This roadmap describes the planned development phases for NEXUS. It is intention
 
 Define the initial repository structure, documentation, project scope, contribution expectations, and architectural vocabulary.
 
+Success criteria:
+
+- The repository clearly explains the project scope and early-stage status.
+- Placeholder directories and documentation files establish the intended project shape.
+
 ## Phase 1: Core Shell
 
 Introduce the minimal application shell and core service boundaries needed to host future plugins, adapters, configuration, workspace state, and internal events.
+
+Success criteria:
+
+- A minimal shell can start without robot integrations.
+- Core service boundaries are documented well enough to guide plugin and adapter work.
 
 ## Phase 2: Plugin SDK
 
 Define the first plugin development model, including plugin metadata, lifecycle hooks, UI extension points, capability access, and compatibility expectations.
 
+Success criteria:
+
+- A minimal plugin can declare metadata and register with the shell.
+- Plugin lifecycle and compatibility expectations are documented.
+
 ## Phase 3: Telemetry Plugin
 
 Create an initial telemetry plugin to display normalized state from connected systems. This phase should validate the event bus, capability model, and plugin UI integration.
+
+Success criteria:
+
+- The plugin can display normalized telemetry from a mock or adapter-provided source.
+- The telemetry path validates early event and capability assumptions.
 
 ## Phase 4: Map Plugin
 
 Add a map-focused plugin for spatial awareness, vehicle positions, overlays, and mission context. This should remain independent of any single robot type or protocol.
 
+Success criteria:
+
+- The map plugin can display one or more system positions from normalized data.
+- Map overlays remain decoupled from any single robot middleware.
+
 ## Phase 5: Mission Plugin
 
 Introduce mission planning and execution concepts that can work across heterogeneous systems. Early work should focus on abstractions before advanced automation.
+
+Success criteria:
+
+- Basic mission concepts are represented without assuming UAV-only workflows.
+- Mission state can be surfaced through the plugin model.
 
 ## Phase 6: ROS Adapter
 
 Add a ROS-oriented adapter to validate integration with common robotics middleware while keeping the NEXUS core middleware-independent.
 
+Success criteria:
+
+- Selected ROS topics and services can be mapped into normalized NEXUS concepts.
+- ROS-specific behavior remains isolated in the adapter layer.
+
 ## Phase 7: MQTT Adapter
 
 Add an MQTT adapter for lightweight event, telemetry, and command integration with distributed systems and custom deployments.
+
+Success criteria:
+
+- MQTT topics can be mapped into telemetry, event, or command channels.
+- Broker configuration remains adapter-specific.
 
 ## Phase 8: MAVLink Adapter
 
 Add a MAVLink adapter for UAV and autopilot interoperability while preserving the broader robot-agnostic architecture.
 
+Success criteria:
+
+- Core MAVLink telemetry can be represented through the shared capability and event model.
+- UAV-specific assumptions do not leak into the platform core.
+
 ## Phase 9: EAGLE Adapter/Demo
 
-Create an EAGLE adapter or demonstration integration to validate a realistic end-to-end workflow with the NEXUS platform model.
+Create an EAGLE adapter or demonstration integration to validate a realistic end-to-end workflow with the NEXUS platform model. In this roadmap, EAGLE refers to a future real-world UAV mission-management integration demo rather than an implemented component.
+
+Success criteria:
+
+- The demo exercises a realistic UAV mission-management workflow through NEXUS concepts.
+- Lessons from the integration are captured as architecture updates, issues, or ADRs.

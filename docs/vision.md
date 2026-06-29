@@ -1,6 +1,6 @@
 # Vision
 
-NEXUS exists to support robotics operations that are no longer limited to a single vehicle type, protocol, or control interface.
+NEXUS exists to explore a modular foundation for robotics operations that are no longer limited to a single vehicle type, protocol, or control interface.
 
 Many existing operator tools are built around a specific platform category, especially UAV Ground Control Stations. These tools are valuable for flight planning, telemetry, map interaction, and vehicle command workflows, but they often assume a vehicle model, mission structure, and communication stack that does not generalize cleanly to heterogeneous autonomous systems.
 
@@ -12,15 +12,15 @@ NEXUS is intended to address this by treating the operator environment as a modu
 
 Traditional UAV Ground Control Stations are usually centered on aircraft operations. Their primary concepts are often vehicles, maps, flight modes, mission plans, telemetry streams, and command interfaces tied to aerial robotics.
 
-NEXUS is broader in scope:
+The planned NEXUS scope is broader:
 
-- It is robot-agnostic rather than UAV-only.
-- It uses adapters to connect different middleware, protocols, and systems.
+- It should be robot-agnostic rather than UAV-only.
+- It should use adapters to connect different middleware, protocols, and systems.
 - It aims to expose capabilities instead of assuming a fixed vehicle model.
-- It treats UI features as plugins that can be loaded for specific missions and systems.
-- It is designed for mixed operations where multiple robots, payloads, and tools may be active at once.
+- It should treat UI features as plugins that can be loaded for specific missions and systems.
+- It is intended for mixed operations where multiple robots, payloads, and tools may be active at once.
 
-The goal is not to replace every specialized control station. The goal is to provide a modular operations platform that can host domain-specific tools while sharing common infrastructure for state, events, plugins, workspaces, and operator workflows.
+The goal is not to replace every specialized control station. The goal is to define and eventually implement a modular operations platform that can host domain-specific tools while sharing common infrastructure for state, events, plugins, workspaces, and operator workflows.
 
 ## Early Direction
 
