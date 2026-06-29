@@ -64,7 +64,6 @@ Specialized systems such as autopilots, robotics middleware, and domain-specific
 6. ROS adapter
 7. MQTT adapter
 8. MAVLink adapter
-9. EAGLE adapter/demo
 
 ## Current Status
 
