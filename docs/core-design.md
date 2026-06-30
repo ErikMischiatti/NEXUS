@@ -1,0 +1,285 @@
+# Core Design
+
+## 1. Purpose
+
+This document defines the Phase 1 runtime contract for NEXUS Core.
+
+It is an implementation-oriented design for the first headless runtime, not a vision statement. The purpose is to establish the minimum contracts needed to build, test, and evolve the core without baking in UI, adapter, or middleware assumptions too early.
+
+## 2. Phase 1 Scope
+
+Phase 1 covers a minimal in-process core runtime with the following pieces:
+
+- headless in-process core runtime
+- Event Bus
+- Plugin Manager
+- Configuration
+- Logging
+- simple DI/service container
+- lifecycle management
+- mock/demo plugin
+- smoke tests
+
+Phase 1 explicitly excludes:
+
+- UI
+- ROS/MQTT/MAVLink adapters
+- distributed messaging
+- plugin sandboxing
+- production safety guarantees
+- full capability schema
+
+## 3. Core Responsibilities
+
+The core owns the runtime foundations that other modules depend on:
+
+- runtime bootstrap
+- lifecycle orchestration
+- event routing
+- plugin registration/activation
+- config loading
+- shared logging
+- service registration and lookup
+
+These responsibilities are intentionally narrow. The core should provide predictable platform services and a stable contract for plugins, but it should not absorb domain behavior that belongs in plugins or adapters.
+
+## 4. Core Non-Responsibilities
+
+The core should not own:
+
+- vehicle-specific logic
+- middleware-specific protocols
+- UI rendering
+- mission semantics
+- autopilot behavior
+- safety-critical control
+
+If a concern depends on a specific robot, protocol, mission model, or operator interface, it belongs outside NEXUS Core.
+
+## 5. Proposed Runtime Bootstrap Flow
+
+The intended boot sequence for Phase 1 is:
+
+1. load configuration
+2. initialize logger
+3. create service container
+4. create event bus
+5. create plugin manager
+6. register built-in services
+7. load plugins
+8. start plugins
+9. run until shutdown
+10. stop plugins cleanly
+
+The boot sequence should remain deterministic and testable. Startup should fail fast on invalid configuration or missing required services, while shutdown should attempt to stop already-started plugins in a controlled order.
+
+## 6. Event Model
+
+Phase 1 uses a minimal event envelope:
+
+```ts
+type NexusEvent<TPayload = unknown> = {
+  id: string;
+  type: string;
+  source: string;
+  timestamp: string;
+  payload: TPayload;
+  correlationId?: string;
+};
+```
+
+Minimum Event Bus API:
+
+- `publish(event)`
+- `subscribe(type, handler)`
+- `unsubscribe(subscription)`
+
+Request/reply can be considered later, but it is out of scope for Phase 1.
+
+Event type strings should be namespaced and stable. Examples:
+
+- `core.runtime.started`
+- `core.runtime.stopped`
+- `plugin.loaded`
+- `telemetry.updated`
+
+The event bus should not impose domain-specific structure beyond the envelope. Payloads may be typed by the caller, but the bus itself should treat them as opaque values.
+
+## 7. Plugin Model
+
+Phase 1 uses a minimal plugin manifest and lifecycle contract:
+
+```ts
+type NexusPluginManifest = {
+  id: string;
+  name: string;
+  version: string;
+  entrypoint: string;
+  requiredServices?: string[];
+  requiredCapabilities?: string[];
+};
+
+type NexusPlugin = {
+  manifest: NexusPluginManifest;
+  onLoad?(context: PluginContext): Promise<void> | void;
+  onStart?(context: PluginContext): Promise<void> | void;
+  onStop?(context: PluginContext): Promise<void> | void;
+};
+```
+
+Plugin context:
+
+```ts
+type PluginContext = {
+  eventBus: EventBus;
+  logger: Logger;
+  config: CoreConfig;
+  services: ServiceContainer;
+};
+```
+
+Plugin lifecycle expectations:
+
+- `onLoad` is for initialization work that must happen before activation.
+- `onStart` is for subscribing to events, starting timers, or publishing startup state.
+- `onStop` is for cleanup, unsubscription, and release of resources.
+
+The Plugin Manager should validate manifests, load plugin modules, and orchestrate lifecycle calls. It should not allow plugins to reach into internal core objects except through the declared context.
+
+## 8. Configuration Model
+
+Phase 1 should support a small and predictable configuration model.
+
+Configuration sources:
+
+- default config
+- config file path
+- environment overrides
+
+Configuration should be validated before runtime startup proceeds.
+
+Minimal Phase 1 config fields:
+
+- `runtime.name`
+- `runtime.logLevel`
+- `plugins.enabled`
+- `plugins.paths`
+
+The exact file format is intentionally undecided at this stage. The config loader should be designed so the format can be chosen later without changing the runtime contract.
+
+The recommended precedence is:
+
+1. defaults
+2. config file
+3. environment overrides
+
+## 9. Logging Model
+
+Phase 1 uses structured logging with a console sink.
+
+Logging expectations:
+
+- logs should be structured, not free-form strings only
+- log levels should be supported
+- each core component and plugin should receive its own logger instance or logger scope
+- correlationId support should exist in the event model for later use, but it does not need full end-to-end enforcement in Phase 1
+
+The initial sink can be console output. Additional sinks, formatting strategies, and persistence concerns can be added later without changing the basic logger contract.
+
+## 10. Dependency Injection / Service Container
+
+Phase 1 uses a simple service container rather than a full framework.
+
+Minimum service container behavior:
+
+- register service
+- get service
+- optional service namespaces
+
+The container should support the small set of shared services required by the core runtime and plugins.
+
+Plugins should receive only `PluginContext`, not direct access to the full internal core runtime. If a plugin needs a service, it should resolve that service through the context-provided container.
+
+This keeps the core boundary explicit and makes tests easier to reason about.
+
+## 11. Lifecycle And Error Handling
+
+Phase 1 should define clear behavior for load, start, and stop failures.
+
+Expected failure categories:
+
+- load errors
+- start errors
+- stop errors
+
+Phase 1 plugin failure policy:
+
+- invalid plugin manifests fail during load
+- plugin load failures stop that plugin from activating
+- plugin start failures should be surfaced clearly and should not silently disappear
+- plugin stop failures should be reported, but shutdown should continue for remaining plugins when possible
+
+Graceful shutdown expectations:
+
+- stop plugins in reverse activation order when practical
+- release subscriptions and resources deterministically
+- emit runtime stop state if the runtime reaches shutdown cleanly
+
+The Phase 1 runtime should favor fail-fast behavior on boot and controlled shutdown behavior on exit. It does not need production-grade recovery, supervision trees, or sandbox isolation yet.
+
+## 12. Testing Strategy
+
+Phase 1 should be covered by focused tests around the core contracts:
+
+- Event Bus unit tests
+- config loader unit tests
+- plugin lifecycle tests
+- smoke test booting runtime with mock plugin
+
+No UI tests are needed in Phase 1.
+
+Tests should verify contract behavior rather than implementation details. In particular, they should assert event delivery, config precedence, plugin lifecycle ordering, and clean runtime shutdown.
+
+## 13. Proposed TypeScript Package Structure
+
+```text
+core/
+├─ package.json
+├─ tsconfig.json
+├─ src/
+│  ├─ index.ts
+│  ├─ runtime/
+│  ├─ bus/
+│  ├─ plugins/
+│  ├─ config/
+│  ├─ logging/
+│  ├─ di/
+│  └─ lifecycle/
+└─ test/
+```
+
+This structure keeps the first implementation focused on the runtime boundary and avoids prematurely splitting the platform into too many packages.
+
+## 14. Phase 1 Success Criteria
+
+Phase 1 is complete when:
+
+- core package builds
+- tests pass
+- runtime boots headlessly
+- mock plugin loads
+- plugin subscribes and publishes an event
+- runtime shuts down cleanly
+
+## 15. Open Questions
+
+The following items remain open and should be resolved before or during implementation:
+
+- package manager
+- test runner
+- final config file format
+- plugin packaging format
+- whether plugin SDK becomes separate package in Phase 2
+- future adapter boundaries
+
+These are intentionally left open because they depend on the first implementation choices and the level of separation that proves useful in practice.
