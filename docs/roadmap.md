@@ -83,9 +83,6 @@ Success criteria:
 - Core MAVLink telemetry can be represented through the shared capability and event model.
 - UAV-specific assumptions do not leak into the platform core.
 
-## Phase 9: EAGLE Adapter/Demo
-
-Create an EAGLE adapter or demonstration integration to validate a realistic end-to-end workflow with the NEXUS platform model. In this roadmap, EAGLE refers to a future real-world UAV mission-management integration demo rather than an implemented component.
 
 Success criteria:
 

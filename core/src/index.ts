@@ -1,7 +1,3 @@
-import type {
-  EventBus,
-} from "./bus/index.js";
-
 export { InMemoryEventBus } from "./bus/index.js";
 
 export type {
@@ -11,28 +7,14 @@ export type {
   NexusEvent,
 } from "./bus/index.js";
 
-export type NexusPluginManifest = {
-  id: string;
-  name: string;
-  version: string;
-  entrypoint: string;
-  requiredServices?: string[];
-  requiredCapabilities?: string[];
-};
+export { BasicPluginManager, createPluginContext } from "./plugins/index.js";
 
-export type PluginContext = {
-  eventBus: EventBus;
-  logger: Logger;
-  config: CoreConfig;
-  services: ServiceContainer;
-};
-
-export type NexusPlugin = {
-  manifest: NexusPluginManifest;
-  onLoad?(context: PluginContext): Promise<void> | void;
-  onStart?(context: PluginContext): Promise<void> | void;
-  onStop?(context: PluginContext): Promise<void> | void;
-};
+export type {
+  NexusPlugin,
+  NexusPluginManifest,
+  PluginContext,
+  PluginManager,
+} from "./plugins/index.js";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 

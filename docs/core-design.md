@@ -116,9 +116,12 @@ type NexusPluginManifest = {
   id: string;
   name: string;
   version: string;
-  entrypoint: string;
   requiredServices?: string[];
   requiredCapabilities?: string[];
+};
+
+type PluginContext = {
+  eventBus: EventBus;
 };
 
 type NexusPlugin = {
@@ -129,24 +132,13 @@ type NexusPlugin = {
 };
 ```
 
-Plugin context:
-
-```ts
-type PluginContext = {
-  eventBus: EventBus;
-  logger: Logger;
-  config: CoreConfig;
-  services: ServiceContainer;
-};
-```
-
 Plugin lifecycle expectations:
 
-- `onLoad` is for initialization work that must happen before activation.
+- `onLoad` is for initialization work before activation.
 - `onStart` is for subscribing to events, starting timers, or publishing startup state.
 - `onStop` is for cleanup, unsubscription, and release of resources.
 
-The Plugin Manager should validate manifests, load plugin modules, and orchestrate lifecycle calls. It should not allow plugins to reach into internal core objects except through the declared context.
+The plugin manager is intentionally in-process only. It validates duplicate plugin IDs, runs lifecycle hooks sequentially in registration order, and stops started plugins in reverse startup order when possible. Failures are surfaced immediately; the manager does not attempt retries, recovery, or parallel orchestration.
 
 ## 8. Configuration Model
 

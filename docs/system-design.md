@@ -150,7 +150,7 @@ The following YAML is illustrative only. It is not a finalized schema.
 
 ```yaml
 vehicle:
-  id: eagle_uav_01
+  id: uav_01
   type: uav
   capabilities:
     mobility:
@@ -202,14 +202,6 @@ NEXUS is not currently:
 - a safety-certified control system
 
 The intended role of NEXUS is to become an operations and integration layer around existing robotics systems, not to replace the core responsibilities of autopilots, middleware, safety controllers, or specialized domain tools.
-
-## Relationship With EAGLE
-
-EAGLE is planned as a future real-world UAV mission-management integration demo for NEXUS.
-
-The EAGLE demo should help validate NEXUS against an existing mission manager, behavior-tree state machine, payload logic, and operator workflow. It is useful because it can test whether NEXUS abstractions hold up against a concrete UAV system rather than only synthetic examples.
-
-This integration is not implemented yet.
 
 ## Open Questions
 
