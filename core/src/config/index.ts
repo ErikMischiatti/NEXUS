@@ -6,6 +6,5 @@ export type {
   ConfigLoader,
   NexusConfig,
   NexusPluginConfig,
-  LogLevel,
   NexusRuntimeConfig,
 } from "./types.js";

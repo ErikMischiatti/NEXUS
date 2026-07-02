@@ -1,4 +1,4 @@
-export type LogLevel = "debug" | "info" | "warn" | "error";
+import type { LogLevel } from "../logging/types.js";
 
 export type NexusRuntimeConfig = {
   name: string;

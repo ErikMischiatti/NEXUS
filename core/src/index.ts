@@ -23,15 +23,18 @@ export type {
   NexusConfig,
   NexusPluginConfig,
   NexusRuntimeConfig,
-  LogLevel,
 } from "./config/index.js";
 
-export type Logger = {
-  debug(message: string, meta?: Record<string, unknown>): void;
-  info(message: string, meta?: Record<string, unknown>): void;
-  warn(message: string, meta?: Record<string, unknown>): void;
-  error(message: string, meta?: Record<string, unknown>): void;
-};
+export { BasicLogger, BasicLoggerFactory, createLogger } from "./logging/index.js";
+
+export type {
+  LogContext,
+  LogLevel,
+  LogRecord,
+  LogSink,
+  Logger,
+  LoggerFactory,
+} from "./logging/index.js";
 
 export type CoreConfig = import("./config/index.js").NexusConfig;
 

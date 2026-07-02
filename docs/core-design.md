@@ -159,16 +159,16 @@ Validation is strict and should reject missing `runtime.name`, invalid `runtime.
 
 ## 9. Logging Model
 
-Phase 1 uses structured logging with a console sink.
+Phase 1 uses structured logging with a console sink. The logger filters by minimum level, emits structured records, and supports component-scoped child loggers.
 
 Logging expectations:
 
 - logs should be structured, not free-form strings only
 - log levels should be supported
 - each core component and plugin should receive its own logger instance or logger scope
-- correlationId support should exist in the event model for later use, but it does not need full end-to-end enforcement in Phase 1
+- correlationId support should exist in log records for later use, but it does not need full end-to-end enforcement in Phase 1
 
-The initial sink can be console output. Additional sinks, formatting strategies, and persistence concerns can be added later without changing the basic logger contract.
+The initial sink is console output. Additional sinks, formatting strategies, and persistence concerns can be added later without changing the basic logger contract.
 
 ## 10. Dependency Injection / Service Container
 
