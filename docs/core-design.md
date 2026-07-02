@@ -96,6 +96,8 @@ Minimum Event Bus API:
 
 Request/reply can be considered later, but it is out of scope for Phase 1.
 
+The Phase 1 implementation uses async `publish(event)` so handlers may return either `void` or `Promise<void>`. Handlers are invoked sequentially in subscription order. If a handler throws or rejects, `publish()` rejects immediately and later handlers for that event are not invoked.
+
 Event type strings should be namespaced and stable. Examples:
 
 - `core.runtime.started`

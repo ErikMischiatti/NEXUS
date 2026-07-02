@@ -1,24 +1,15 @@
-export type NexusEvent<TPayload = unknown> = {
-  id: string;
-  type: string;
-  source: string;
-  timestamp: string;
-  payload: TPayload;
-  correlationId?: string;
-};
+import type {
+  EventBus,
+} from "./bus/index.js";
 
-export type EventHandler<TPayload = unknown> = (
-  event: NexusEvent<TPayload>,
-) => void | Promise<void>;
+export { InMemoryEventBus } from "./bus/index.js";
 
-export interface EventBus {
-  publish<TPayload>(event: NexusEvent<TPayload>): Promise<void> | void;
-  subscribe<TPayload>(
-    type: string,
-    handler: EventHandler<TPayload>,
-  ): unknown;
-  unsubscribe(subscription: unknown): void;
-}
+export type {
+  EventBus,
+  EventHandler,
+  EventSubscription,
+  NexusEvent,
+} from "./bus/index.js";
 
 export type NexusPluginManifest = {
   id: string;
