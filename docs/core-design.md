@@ -180,7 +180,7 @@ Minimum service container behavior:
 - get service
 - optional service namespaces
 
-The container should support the small set of shared services required by the core runtime and plugins.
+The container uses explicit typed service keys rather than string lookup. The initial core keys are `eventBus`, `config`, and `loggerFactory`. Duplicate registration should fail, missing services should fail clearly, and key listing should remain deterministic.
 
 Plugins should receive only `PluginContext`, not direct access to the full internal core runtime. If a plugin needs a service, it should resolve that service through the context-provided container.
 

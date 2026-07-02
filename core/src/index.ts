@@ -36,12 +36,21 @@ export type {
   LoggerFactory,
 } from "./logging/index.js";
 
-export type CoreConfig = import("./config/index.js").NexusConfig;
+export {
+  BasicServiceContainer,
+  config,
+  eventBus,
+  loggerFactory,
+} from "./di/index.js";
 
-export interface ServiceContainer {
-  register<T>(key: string, value: T): void;
-  get<T>(key: string): T | undefined;
-}
+export type {
+  ServiceContainer,
+  ServiceKey,
+} from "./di/index.js";
+
+export { createServiceKey } from "./di/index.js";
+
+export type CoreConfig = import("./config/index.js").NexusConfig;
 
 export class Runtime {
   constructor(public readonly name: string = "nexus-core") {}
