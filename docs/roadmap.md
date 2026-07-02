@@ -13,12 +13,17 @@ Success criteria:
 
 ## Phase 1: Core Shell
 
-Introduce the minimal application shell and core service boundaries needed to host future plugins, adapters, configuration, workspace state, and internal events.
+Implement the headless in-process core runtime and the minimum service boundaries needed to host future plugins, adapters, configuration, workspace state, and internal events.
+
+Status:
+
+- Implemented in `@nexus/core` as a headless, in-process runtime shell.
+- Event bus, plugin lifecycle, configuration, logging, service container, and runtime bootstrap are in place.
 
 Success criteria:
 
-- A minimal shell can start without robot integrations.
-- Core service boundaries are documented well enough to guide plugin and adapter work.
+- A minimal headless shell can start without robot integrations.
+- Core service boundaries are documented and implemented in `@nexus/core`.
 
 ## Phase 2: Plugin SDK
 
@@ -83,8 +88,3 @@ Success criteria:
 - Core MAVLink telemetry can be represented through the shared capability and event model.
 - UAV-specific assumptions do not leak into the platform core.
 
-
-Success criteria:
-
-- The demo exercises a realistic UAV mission-management workflow through NEXUS concepts.
-- Lessons from the integration are captured as architecture updates, issues, or ADRs.

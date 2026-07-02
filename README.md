@@ -12,13 +12,7 @@ NEXUS is intended to provide a modular foundation for this problem: a robot-agno
 
 NEXUS aims to become an IDE-like operations environment for robotics teams. Instead of treating the control station as a fixed application, the planned platform will provide a shell where robots, payloads, data sources, mission tools, and operator workflows can be composed through well-defined extension points.
 
-The project is early-stage. This repository currently defines the initial project foundation, scope, and planned architecture. Runtime components are not implemented yet.
-
-## Repository Status
-
-This repository currently contains the documentation and architecture foundation for NEXUS only. The tracked source directories are placeholders for future core, UI, plugin, adapter, example, and test work.
-
-There is no implemented runtime, plugin loader, robot adapter, operator UI, or mission-control functionality in this repository yet.
+The project is early-stage, but the core package now includes the headless runtime and the minimum in-process contracts needed to support it. The repository still does not include UI, adapters, or production deployment pieces.
 
 ## Documentation
 
@@ -40,7 +34,7 @@ There is no implemented runtime, plugin loader, robot adapter, operator UI, or m
 
 The planned architecture is organized around a small core and extensible modules:
 
-- **NEXUS Core**: lifecycle, configuration, workspace state, permissions, and platform services.
+- **NEXUS Core**: headless event bus, plugin lifecycle, configuration, structured logging, service container, and runtime bootstrap.
 - **Event Bus**: internal communication channel for telemetry, commands, state changes, and plugin coordination.
 - **Plugin Manager**: discovery, loading, activation, and isolation boundaries for plugins.
 - **Adapter Layer**: integrations for robotics middleware, protocols, hardware, simulators, and external services.
@@ -73,5 +67,4 @@ Specialized systems such as autopilots, robotics middleware, and domain-specific
 8. MAVLink adapter
 
 ## Current Status
-
-NEXUS is in early development. The repository currently contains the initial documentation and placeholder project structure only.
+NEXUS is in early development, but the headless core runtime milestones are implemented in `@nexus/core`. UI, adapters, and production-oriented workflows remain unimplemented.

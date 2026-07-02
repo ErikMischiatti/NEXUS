@@ -6,7 +6,7 @@ This project follows an early-stage development process. Versioning and release 
 
 ## Unreleased
 
-- Polished documentation to clarify early-stage repository status, non-goals, roadmap success criteria, and conceptual architecture examples.
-- Created the initial project foundation.
-- Added project documentation for vision, roadmap, architecture, and scope.
-- Added placeholder directories for future core, UI, plugin, adapter, example, and test work.
+- Clarified the early-stage repository status and core architecture docs.
+- Implemented the headless core runtime milestones in `core/`.
+- Added the in-memory event bus, plugin lifecycle, configuration, logging, and service container.
+- Added a demo plugin smoke test and the headless runtime bootstrap path.
