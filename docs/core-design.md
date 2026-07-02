@@ -71,7 +71,7 @@ The intended boot sequence for Phase 1 is:
 9. run until shutdown
 10. stop plugins cleanly
 
-The boot sequence should remain deterministic and testable. Startup should fail fast on invalid configuration or missing required services, while shutdown should attempt to stop already-started plugins in a controlled order.
+The boot sequence should remain deterministic and testable. Startup loads config, creates the logger factory, registers core services, starts registered plugins, and publishes `core.runtime.started` after startup completes. Shutdown stops plugins in reverse activation order when possible, then publishes `core.runtime.stopped` after a clean stop. Runtime start is one-shot in Phase 1. Startup should fail fast on invalid configuration or missing required services, while shutdown should attempt to stop already-started plugins in a controlled order.
 
 ## 6. Event Model
 

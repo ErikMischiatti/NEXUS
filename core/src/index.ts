@@ -52,12 +52,12 @@ export { createServiceKey } from "./di/index.js";
 
 export type CoreConfig = import("./config/index.js").NexusConfig;
 
-export class Runtime {
-  constructor(public readonly name: string = "nexus-core") {}
+export { BasicRuntime as Runtime, createRuntime } from "./runtime/index.js";
 
-  start(): string {
-    return `${this.name}:started`;
-  }
-}
-
-export const createRuntime = (name?: string): Runtime => new Runtime(name);
+export type {
+  RuntimeHandle,
+  RuntimeOptions,
+  RuntimeServices,
+  RuntimeSnapshot,
+  RuntimeState,
+} from "./runtime/index.js";

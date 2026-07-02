@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { Runtime, createRuntime } from "../src/index.js";
+import { createRuntime } from "../src/index.js";
 describe("nexus core smoke", () => {
-    it("instantiates the placeholder runtime", () => {
-        const runtime = new Runtime();
-        expect(runtime.name).toBe("nexus-core");
-        expect(runtime.start()).toBe("nexus-core:started");
+    it("instantiates the runtime", async () => {
+        const runtime = createRuntime();
+        expect(runtime.name).toBe("nexus-runtime");
+        await runtime.start();
+        expect(runtime.state).toBe("running");
+        await runtime.stop();
     });
-    it("creates a runtime through the helper", () => {
+    it("creates a runtime through the helper", async () => {
         const runtime = createRuntime("demo");
         expect(runtime.name).toBe("demo");
-        expect(runtime.start()).toBe("demo:started");
+        await runtime.start();
+        expect(runtime.config?.runtime.name).toBe("demo");
+        await runtime.stop();
     });
 });
