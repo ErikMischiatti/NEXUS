@@ -16,7 +16,15 @@ export type {
   PluginManager,
 } from "./plugins/index.js";
 
-export type LogLevel = "debug" | "info" | "warn" | "error";
+export { BasicConfigLoader, createDefaultConfig } from "./config/index.js";
+
+export type {
+  ConfigLoader,
+  NexusConfig,
+  NexusPluginConfig,
+  NexusRuntimeConfig,
+  LogLevel,
+} from "./config/index.js";
 
 export type Logger = {
   debug(message: string, meta?: Record<string, unknown>): void;
@@ -25,16 +33,7 @@ export type Logger = {
   error(message: string, meta?: Record<string, unknown>): void;
 };
 
-export type CoreConfig = {
-  runtime: {
-    name: string;
-    logLevel: LogLevel;
-  };
-  plugins: {
-    enabled: boolean;
-    paths: string[];
-  };
-};
+export type CoreConfig = import("./config/index.js").NexusConfig;
 
 export interface ServiceContainer {
   register<T>(key: string, value: T): void;

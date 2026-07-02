@@ -142,15 +142,7 @@ The plugin manager is intentionally in-process only. It validates duplicate plug
 
 ## 8. Configuration Model
 
-Phase 1 should support a small and predictable configuration model.
-
-Configuration sources:
-
-- default config
-- config file path
-- environment overrides
-
-Configuration should be validated before runtime startup proceeds.
+Phase 1 uses a small in-memory configuration model. The initial loader does not parse files or read environment variables.
 
 Minimal Phase 1 config fields:
 
@@ -159,13 +151,11 @@ Minimal Phase 1 config fields:
 - `plugins.enabled`
 - `plugins.paths`
 
-The exact file format is intentionally undecided at this stage. The config loader should be designed so the format can be chosen later without changing the runtime contract.
+Defaults are: `runtime.name = "nexus-runtime"`, `runtime.logLevel = "info"`, `plugins.enabled = []`, and `plugins.paths = []`.
 
-The recommended precedence is:
+The loader merges partial config objects with defaults, validates the result, and returns a normalized copy containing only the supported fields. Unknown fields are intentionally ignored for Phase 1.3.
 
-1. defaults
-2. config file
-3. environment overrides
+Validation is strict and should reject missing `runtime.name`, invalid `runtime.logLevel`, and non-array `plugins.enabled` or `plugins.paths` values.
 
 ## 9. Logging Model
 
