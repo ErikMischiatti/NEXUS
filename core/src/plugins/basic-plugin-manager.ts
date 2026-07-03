@@ -4,6 +4,7 @@ import type {
   PluginContext,
   PluginManager,
 } from "./types.js";
+import { validatePluginManifest } from "./manifest-validation.js";
 
 type PluginRecord = {
   plugin: NexusPlugin;
@@ -25,7 +26,10 @@ export class BasicPluginManager implements PluginManager {
   constructor(private readonly context: PluginContext) {}
 
   register(plugin: NexusPlugin): void {
-    const { id } = plugin.manifest;
+    const manifest = validatePluginManifest(plugin.manifest);
+    plugin.manifest = manifest;
+
+    const { id } = manifest;
     if (this.recordsById.has(id)) {
       throw new Error(`Plugin with id "${id}" is already registered.`);
     }

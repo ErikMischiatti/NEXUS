@@ -7,7 +7,7 @@ export type {
   NexusEvent,
 } from "./bus/index.js";
 
-export { BasicPluginManager, createPluginContext } from "./plugins/index.js";
+export { BasicPluginManager, createPluginContext, PluginManifestValidationError, validatePluginManifest } from "./plugins/index.js";
 
 export type {
   NexusPlugin,

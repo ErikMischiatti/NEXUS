@@ -123,6 +123,7 @@ Validation checks manifest shape, required fields, and SDK compatibility.
 
 - Validation happens before loading.
 - Invalid descriptors are rejected with clear, structured errors.
+- Validation trims required and optional string fields, defaults `requiredServices` and `requiredCapabilities` to empty arrays, and drops unknown manifest fields.
 - Validation does not import the plugin module.
 
 ### Loading
@@ -135,9 +136,9 @@ Loading resolves and imports the plugin module referenced by the descriptor.
 
 ### Registration
 
-Registration adds a validated plugin to the registry under its unique `id`.
+Registration validates and normalizes the manifest, then adds the plugin to the registry under its normalized unique `id`.
 
-- Registration must reject duplicate IDs.
+- Registration must reject duplicate IDs after normalization.
 - Registration does not imply start.
 - Registration should be deterministic and order-aware.
 

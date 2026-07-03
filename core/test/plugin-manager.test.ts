@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   BasicPluginManager,
   InMemoryEventBus,
+  PluginManifestValidationError,
   createPluginContext,
   type NexusPlugin,
 } from "../src/index.js";
@@ -68,6 +69,30 @@ describe("BasicPluginManager", () => {
         pluginApi: "^1.0.0",
       },
     });
+  });
+
+  it("rejects invalid manifests during registration", () => {
+    const manager = new BasicPluginManager({ eventBus: new InMemoryEventBus() });
+
+    expect(() =>
+      manager.register({
+        manifest: {
+          id: "plugin.invalid",
+          name: " ",
+          version: "1.0.0",
+        },
+      } as NexusPlugin),
+    ).toThrow(PluginManifestValidationError);
+  });
+
+  it("uses the normalized manifest id for duplicate detection", () => {
+    const manager = new BasicPluginManager({ eventBus: new InMemoryEventBus() });
+
+    manager.register(createPlugin("  alpha  "));
+
+    expect(() => manager.register(createPlugin("alpha"))).toThrow(
+      'Plugin with id "alpha" is already registered.',
+    );
   });
 
   it("rejects duplicate plugin IDs", () => {

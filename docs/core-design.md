@@ -153,7 +153,7 @@ Plugin lifecycle expectations:
 - `onStart` is for subscribing to events, starting timers, or publishing startup state.
 - `onStop` is for cleanup, unsubscription, and release of resources.
 
-The plugin manager is intentionally in-process only. It validates duplicate plugin IDs, runs lifecycle hooks sequentially in registration order, and stops started plugins in reverse startup order when possible. Failures are surfaced immediately; the manager does not attempt retries, recovery, or parallel orchestration.
+The plugin manager is intentionally in-process only. It validates plugin manifests before registration, normalizes the manifest into the public SDK shape, rejects duplicate plugin IDs after normalization, runs lifecycle hooks sequentially in registration order, and stops started plugins in reverse startup order when possible. Failures are surfaced immediately; the manager does not attempt retries, recovery, or parallel orchestration.
 
 ## 8. Configuration Model
 
