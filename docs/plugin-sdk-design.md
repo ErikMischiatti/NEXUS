@@ -128,11 +128,12 @@ Validation checks manifest shape, required fields, and SDK compatibility.
 
 ### Loading
 
-Loading resolves and imports the plugin module referenced by the descriptor.
+Loading resolves and imports the plugin module referenced by the descriptor. It executes the entrypoint module, but it does not run plugin lifecycle hooks.
 
 - Loading may execute module code because it imports the plugin entrypoint.
-- Loading should fail clearly on module resolution errors, export-shape errors, or module initialization failures.
-- Loading returns a plugin implementation or factory result, not a registered plugin.
+- Loading should fail clearly on missing entrypoints, module resolution errors, export-shape errors, factory errors, or module initialization failures.
+- Loading accepts either a default `NexusPlugin` export or a `createPlugin(): NexusPlugin` export.
+- Loading returns a plugin implementation, not a registered plugin.
 
 ### Registration
 
@@ -144,7 +145,7 @@ Registration validates and normalizes the manifest, then adds the plugin to the 
 
 ### Lifecycle
 
-Lifecycle execution is the runtime phase that calls plugin hooks.
+Lifecycle execution is the runtime phase that calls plugin hooks. It remains the PluginManager responsibility.
 
 Preferred lifecycle:
 
@@ -218,7 +219,7 @@ Error categories:
 
 - discovery error: path missing, unreadable descriptor, malformed descriptor file
 - validation error: missing required fields, malformed manifest, incompatible SDK range
-- load error: entrypoint missing, module resolution failure, import failure, invalid module export
+- load error: missing entrypoint, module resolution failure, import failure, invalid export shape, manifest mismatch
 - registration error: duplicate plugin ID or conflicting plugin state
 - lifecycle error: hook throws or rejects during `onLoad`, `onStart`, or `onStop`
 

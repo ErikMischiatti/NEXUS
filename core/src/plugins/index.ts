@@ -21,6 +21,15 @@ export type {
   PluginDiscoverySource,
 } from "./discovery/index.js";
 export {
+  LocalPluginLoader,
+} from "./loader/index.js";
+export type {
+  PluginLoader,
+  PluginLoadError,
+  PluginLoadResult,
+  PluginLoadSource,
+} from "./loader/index.js";
+export {
   PluginManifestValidationError,
   validatePluginManifest,
 } from "./manifest-validation.js";
