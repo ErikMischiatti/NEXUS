@@ -107,7 +107,7 @@ Compatibility is stored on the manifest as a descriptive object rather than a ha
 
 ## 8. Discovery, Loading, Registration, Lifecycle
 
-These are separate concepts and must remain separate in the SDK.
+These are separate concepts and must remain separate in the SDK. Discovery will populate the registry in a future phase; the registry is metadata only, while the manager owns execution.
 
 ### Discovery
 
@@ -165,15 +165,18 @@ Lifecycle failures should be surfaced clearly and should not be silently swallow
 
 ## 9. Plugin Registry Concept
 
-The plugin registry is the in-memory authority for validated plugin entries.
+The plugin registry is the in-memory authority for validated plugin entries. Its state model is intentionally small: `REGISTERED`, `LOADED`, `STARTED`, `STOPPED`, and `FAILED`.
 
 Responsibilities:
 
-- store registered plugin metadata and resolved implementations
+- store validated plugin metadata
+- track the current lifecycle state
+- record registration timestamps
+- retain the last lifecycle error when present
 - prevent duplicate IDs
 - preserve deterministic iteration order
 - expose lookup by plugin ID
-- record plugin state transitions if needed by the runtime
+- filter entries by state
 
 The registry is not a marketplace, package cache, or dependency graph manager. It is a small runtime data structure that tracks which plugins are known and what state they are in.
 

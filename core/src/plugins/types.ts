@@ -1,6 +1,7 @@
 import type { EventBus } from "../bus/index.js";
 import type { Logger } from "../logging/index.js";
 import type { ServiceContainer } from "../di/index.js";
+import type { PluginRegistry } from "./registry/index.js";
 
 export type NexusPluginCompatibility = {
   nexusCore?: string;
@@ -38,6 +39,7 @@ export type NexusPlugin = {
 };
 
 export interface PluginManager {
+  readonly registry: PluginRegistry;
   register(plugin: NexusPlugin): void;
   loadAll(): Promise<void>;
   startAll(): Promise<void>;

@@ -30,6 +30,7 @@ describe("BasicPluginManager", () => {
 
     expect(manager.get("alpha")).toBe(plugin);
     expect(manager.list()).toEqual([plugin]);
+    expect(manager.registry.get("alpha")?.state).toBe("REGISTERED");
   });
 
   it("creates a plugin context with only public SDK fields by default", () => {
@@ -150,6 +151,10 @@ describe("BasicPluginManager", () => {
       "stop:beta",
       "stop:alpha",
     ]);
+    expect(manager.registry.listByState("STOPPED").map((entry) => entry.manifest.id)).toEqual([
+      "alpha",
+      "beta",
+    ]);
   });
 
   it("rejects lifecycle errors clearly", async () => {
@@ -168,6 +173,8 @@ describe("BasicPluginManager", () => {
     await manager.loadAll();
 
     await expect(manager.startAll()).rejects.toThrow("start failed");
+    expect(manager.registry.get("alpha")?.state).toBe("FAILED");
+    expect(manager.registry.get("alpha")?.lastLifecycleError).toBe(error);
   });
 
   it("stops started plugins in reverse startup order", async () => {
@@ -201,5 +208,33 @@ describe("BasicPluginManager", () => {
     await manager.stopAll();
 
     expect(calls).toEqual(["stop:gamma", "stop:beta", "stop:alpha"]);
+    expect(manager.registry.listByState("STOPPED").map((entry) => entry.manifest.id)).toEqual([
+      "alpha",
+      "beta",
+      "gamma",
+    ]);
+  });
+
+  it("keeps registry state consistent after lifecycle events", async () => {
+    const manager = new BasicPluginManager({ eventBus: new InMemoryEventBus() });
+
+    manager.register(
+      createPlugin("alpha", {
+        onLoad: () => undefined,
+        onStart: () => undefined,
+        onStop: () => undefined,
+      }),
+    );
+
+    expect(manager.registry.get("alpha")?.state).toBe("REGISTERED");
+
+    await manager.loadAll();
+    expect(manager.registry.get("alpha")?.state).toBe("LOADED");
+
+    await manager.startAll();
+    expect(manager.registry.get("alpha")?.state).toBe("STARTED");
+
+    await manager.stopAll();
+    expect(manager.registry.get("alpha")?.state).toBe("STOPPED");
   });
 });
