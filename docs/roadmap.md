@@ -27,12 +27,17 @@ Success criteria:
 
 ## Phase 2: Plugin SDK
 
-Define the first plugin development model, including plugin metadata, lifecycle hooks, UI extension points, capability access, and compatibility expectations.
+Define the public plugin SDK, manifest validation, local descriptor discovery, registry behavior, and loader semantics for the headless core.
+
+Status:
+
+- Design documented in `docs/plugin-sdk-design.md`.
+- Implementation is pending.
 
 Success criteria:
 
-- A minimal plugin can declare metadata and register with the shell.
-- Plugin lifecycle and compatibility expectations are documented.
+- A minimal plugin can be discovered, validated, loaded, registered, started, and stopped through public SDK contracts.
+- Plugin lifecycle and compatibility expectations are documented and enforced.
 
 ## Phase 3: Telemetry Plugin
 

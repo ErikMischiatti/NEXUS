@@ -7,6 +7,7 @@ This project follows an early-stage development process. Versioning and release 
 ## Unreleased
 
 - Clarified the early-stage repository status and core architecture docs.
+- Documented the Phase 2 plugin SDK and platform extensibility roadmap.
 - Implemented the headless core runtime milestones in `core/`.
 - Added the in-memory event bus, plugin lifecycle, configuration, logging, and service container.
 - Added a demo plugin smoke test and the headless runtime bootstrap path.
