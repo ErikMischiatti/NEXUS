@@ -11,6 +11,16 @@ export type {
   PluginRegistryState,
 } from "./registry/index.js";
 export {
+  LocalPluginDescriptorDiscovery,
+  registerDiscoveredDescriptors,
+} from "./discovery/index.js";
+export type {
+  PluginDescriptor,
+  PluginDiscoveryError,
+  PluginDiscoveryResult,
+  PluginDiscoverySource,
+} from "./discovery/index.js";
+export {
   PluginManifestValidationError,
   validatePluginManifest,
 } from "./manifest-validation.js";

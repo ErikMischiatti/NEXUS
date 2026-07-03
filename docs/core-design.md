@@ -153,7 +153,7 @@ Plugin lifecycle expectations:
 - `onStart` is for subscribing to events, starting timers, or publishing startup state.
 - `onStop` is for cleanup, unsubscription, and release of resources.
 
-The plugin manager is intentionally in-process only. It executes lifecycle hooks, coordinates plugin registration with the registry, runs hooks sequentially in registration order, and stops started plugins in reverse startup order when possible. The registry owns plugin metadata and lifecycle state; the manager owns execution. The registry state model stays intentionally small: `REGISTERED`, `LOADED`, `STARTED`, `STOPPED`, and `FAILED`. Failures are surfaced immediately; the manager does not attempt retries, recovery, or parallel orchestration.
+The plugin manager is intentionally in-process only. It executes lifecycle hooks, coordinates plugin registration with the registry, runs hooks sequentially in registration order, and stops started plugins in reverse startup order when possible. Discovery is separate and reads `nexus.plugin.json` descriptors without executing plugin code. The registry owns plugin metadata and lifecycle state; the manager owns execution. The registry state model stays intentionally small: `REGISTERED`, `LOADED`, `STARTED`, `STOPPED`, and `FAILED`. Failures are surfaced immediately; the manager does not attempt retries, recovery, or parallel orchestration.
 
 ## 8. Configuration Model
 

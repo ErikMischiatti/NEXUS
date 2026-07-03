@@ -111,7 +111,7 @@ These are separate concepts and must remain separate in the SDK. Discovery will 
 
 ### Discovery
 
-Discovery scans local plugin descriptors and identifies candidate plugins.
+Discovery scans `nexus.plugin.json` descriptors in configured base directories and one level below, and identifies candidate plugins.
 
 - Discovery must not execute plugin code.
 - Discovery may only read static descriptor files and filesystem metadata.
@@ -182,16 +182,16 @@ The registry is not a marketplace, package cache, or dependency graph manager. I
 
 ## 10. Local Descriptor Discovery
 
-Phase 2 uses local descriptor discovery for headless development and test environments.
+Phase 2 uses local descriptor discovery for headless development and test environments. Phase 2.4 uses JSON descriptors named `nexus.plugin.json`.
 
 Recommended model:
 
 - each plugin package contains a static descriptor file such as `nexus.plugin.json`
 - the descriptor is colocated with the plugin package root
-- discovery scans configured local paths and reads only descriptor files
+- discovery scans configured local paths and reads only `nexus.plugin.json` descriptor files in the base directory or one level below
 - the descriptor points to the plugin entrypoint module
 
-Discovery should never imply code execution. It is a metadata scan only.
+Discovery should never imply code execution. It is a metadata scan only. Discovery does not import or instantiate plugin entrypoints.
 
 Example descriptor fields:
 
