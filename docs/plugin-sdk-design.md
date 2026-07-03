@@ -56,7 +56,7 @@ The SDK should not expose internal core runtime objects directly. Any runtime ca
 
 The plugin context is the only runtime object plugins receive during lifecycle calls. It must stay small, explicit, and public-SDK-only.
 
-The initial context should expose at least `eventBus`. Additional capabilities should be surfaced only through explicit public SDK contracts, not through raw access to internal runtime objects.
+The initial context exposes `eventBus` and may also include an optional `logger` and a read-only `services` facade. Those optional fields are populated only with public, safe APIs, so plugins never receive direct access to internal runtime objects or mutable containers.
 
 ## 6. Plugin Manifest Contract
 
@@ -65,14 +65,21 @@ The manifest is the stable metadata object used by validation, discovery, and re
 Proposed manifest shape:
 
 ```ts
+type NexusPluginCompatibility = {
+  nexusCore?: string;
+  pluginApi?: string;
+};
+
 type NexusPluginManifest = {
   id: string;
   name: string;
   version: string;
-  sdkVersion: string;
-  entrypoint: string;
+  description?: string;
+  author?: string;
+  entrypoint?: string;
   requiredServices?: string[];
   requiredCapabilities?: string[];
+  compatibility?: NexusPluginCompatibility;
 };
 ```
 
@@ -81,23 +88,22 @@ Contract notes:
 - `id` must be unique and stable across versions of the same plugin line.
 - `name` is human-readable and may change without affecting compatibility.
 - `version` is the plugin package version and should follow semver.
-- `sdkVersion` declares the plugin SDK compatibility range using semver range syntax.
-- `entrypoint` identifies the module that exports the plugin implementation.
-- `requiredServices` lists optional public service keys the plugin expects from the SDK context.
-- `requiredCapabilities` lists optional capability identifiers the plugin expects to be available at runtime.
+- `description` and `author` are optional descriptive metadata for humans and tooling.
+- `entrypoint` is optional for now and identifies the module that exports the plugin implementation when present.
+- `requiredServices` lists public service keys the plugin expects from the SDK context.
+- `requiredCapabilities` lists capability identifiers the plugin expects to be available at runtime.
+- `compatibility` is descriptive for now and records plugin assumptions about `nexusCore` and `pluginApi` versions without enforcing semver validation yet.
 
 The manifest is intentionally metadata-only. Discovery and validation use the manifest before any plugin module is executed.
 
 ## 7. Compatibility And Versioning
 
-Phase 2 assumes semver-based compatibility.
+Compatibility is stored on the manifest as a descriptive object rather than a hard requirement in this milestone.
 
 - Plugin packages version themselves independently via `version`.
-- The SDK exposes its own version and validates `sdkVersion` compatibility before loading a plugin.
-- Loader compatibility checks should fail on incompatible major versions by default.
-- Minor and patch updates should remain compatible unless the SDK explicitly documents a breaking change.
-
-The compatibility policy should be conservative. A plugin should never be started if the SDK cannot establish compatibility with reasonable confidence.
+- `compatibility.nexusCore` and `compatibility.pluginApi` document version assumptions for later validation and loader policy.
+- Semver interpretation is intentionally deferred until the loader is introduced.
+- The contract should remain conservative: plugins should not be started unless the runtime can establish a supported path through the public SDK.
 
 ## 8. Discovery, Loading, Registration, Lifecycle
 
@@ -190,10 +196,13 @@ Example descriptor fields:
   "id": "example.counter",
   "name": "Example Counter",
   "version": "1.0.0",
-  "sdkVersion": "^2.0.0",
   "entrypoint": "./dist/index.js",
   "requiredServices": ["eventBus"],
-  "requiredCapabilities": []
+  "requiredCapabilities": [],
+  "compatibility": {
+    "nexusCore": "^2.1.0",
+    "pluginApi": "^1.0.0"
+  }
 }
 ```
 
@@ -278,7 +287,7 @@ The following items remain open and should be resolved during implementation:
 
 - whether the descriptor file name should be fixed or configurable
 - whether the plugin module exports an object or a factory by default
-- whether `sdkVersion` should be a semver range or a major-only contract
+- whether `compatibility.nexusCore` and `compatibility.pluginApi` should later be validated as semver ranges or a major-only contract
 - whether capability names need their own registry in Phase 2
 - whether plugin descriptors should live beside `package.json` or in a dedicated folder
 - whether the loader should support multiple descriptors in one local path

@@ -112,16 +112,31 @@ The event bus should not impose domain-specific structure beyond the envelope. P
 Phase 1 uses a minimal plugin manifest and lifecycle contract:
 
 ```ts
+type NexusPluginCompatibility = {
+  nexusCore?: string;
+  pluginApi?: string;
+};
+
 type NexusPluginManifest = {
   id: string;
   name: string;
   version: string;
+  description?: string;
+  author?: string;
+  entrypoint?: string;
   requiredServices?: string[];
   requiredCapabilities?: string[];
+  compatibility?: NexusPluginCompatibility;
 };
 
 type PluginContext = {
   eventBus: EventBus;
+  logger?: Logger;
+  services?: {
+    get<T>(key: ServiceKey<T>): T;
+    optional<T>(key: ServiceKey<T>): T | undefined;
+    has<T>(key: ServiceKey<T>): boolean;
+  };
 };
 
 type NexusPlugin = {
@@ -182,7 +197,7 @@ Minimum service container behavior:
 
 The container uses explicit typed service keys rather than string lookup. The initial core keys are `eventBus`, `config`, and `loggerFactory`. Duplicate registration should fail, missing services should fail clearly, and key listing should remain deterministic.
 
-Plugins should receive only `PluginContext`, not direct access to the full internal core runtime. If a plugin needs a service, it should resolve that service through the context-provided container.
+Plugins should receive only `PluginContext`, not direct access to the full internal core runtime. The context exposes `eventBus`, an optional `logger`, and an optional read-only service facade, so plugins can reach public core capabilities without mutating the runtime boundary.
 
 This keeps the core boundary explicit and makes tests easier to reason about.
 

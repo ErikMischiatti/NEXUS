@@ -5,6 +5,7 @@ import {
   loggerFactory as loggerFactoryKey,
   createRuntime,
   type NexusPlugin,
+  type PluginContext,
 } from "../src/index.js";
 
 const createPlugin = (hooks: Partial<NexusPlugin> = {}): NexusPlugin => ({
@@ -100,6 +101,37 @@ describe("BasicRuntime", () => {
     expect(runtime.services.get(eventBusKey)).toBe(runtime.eventBus);
     expect(runtime.services.get(configKey).runtime.name).toBe("nexus-runtime");
     expect(runtime.services.get(loggerFactoryKey)).toBeDefined();
+  });
+
+  it("exposes only the public plugin context surface", async () => {
+    const runtime = createRuntime();
+    let capturedContext: PluginContext | undefined;
+
+    runtime.registerPlugin(
+      createPlugin({
+        onLoad: (context) => {
+          capturedContext = context;
+        },
+      }),
+    );
+
+    await runtime.start();
+
+    expect(capturedContext).toBeDefined();
+    expect(capturedContext?.eventBus).toBe(runtime.eventBus);
+    expect(capturedContext?.logger).toBeDefined();
+    expect(capturedContext?.services).toBeDefined();
+    expect(Object.keys(capturedContext?.services ?? {})).toEqual([
+      "get",
+      "optional",
+      "has",
+    ]);
+    expect("register" in (capturedContext?.services ?? {})).toBe(false);
+    expect("listKeys" in (capturedContext?.services ?? {})).toBe(false);
+    expect(capturedContext?.services?.has(eventBusKey)).toBe(true);
+    expect(capturedContext?.services?.get(eventBusKey)).toBe(runtime.eventBus);
+
+    await runtime.stop();
   });
 
   it("handles start and stop failures clearly", async () => {

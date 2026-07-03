@@ -2,17 +2,20 @@ import { describe, expect, it } from "vitest";
 import {
   BasicPluginManager,
   InMemoryEventBus,
+  createPluginContext,
   type NexusPlugin,
 } from "../src/index.js";
 
 const createPlugin = (
   id: string,
   hooks: Partial<NexusPlugin> = {},
+  manifestOverrides: Partial<NexusPlugin["manifest"]> = {},
 ): NexusPlugin => ({
   manifest: {
     id,
     name: id,
     version: "1.0.0",
+    ...manifestOverrides,
   },
   ...hooks,
 });
@@ -26,6 +29,45 @@ describe("BasicPluginManager", () => {
 
     expect(manager.get("alpha")).toBe(plugin);
     expect(manager.list()).toEqual([plugin]);
+  });
+
+  it("creates a plugin context with only public SDK fields by default", () => {
+    const eventBus = new InMemoryEventBus();
+    const context = createPluginContext(eventBus);
+
+    expect(context).toEqual({ eventBus });
+    expect(context.logger).toBeUndefined();
+    expect(context.services).toBeUndefined();
+  });
+
+  it("accepts optional manifest metadata during registration", () => {
+    const manager = new BasicPluginManager({ eventBus: new InMemoryEventBus() });
+    const plugin = createPlugin("meta", {}, {
+      description: "Example plugin",
+      author: "NEXUS",
+      entrypoint: "./dist/index.js",
+      requiredServices: ["eventBus"],
+      requiredCapabilities: ["telemetry"],
+      compatibility: {
+        nexusCore: ">=2.1.0 <3.0.0",
+        pluginApi: "^1.0.0",
+      },
+    });
+
+    manager.register(plugin);
+
+    expect(manager.get("meta")).toBe(plugin);
+    expect(manager.list()[0]?.manifest).toMatchObject({
+      description: "Example plugin",
+      author: "NEXUS",
+      entrypoint: "./dist/index.js",
+      requiredServices: ["eventBus"],
+      requiredCapabilities: ["telemetry"],
+      compatibility: {
+        nexusCore: ">=2.1.0 <3.0.0",
+        pluginApi: "^1.0.0",
+      },
+    });
   });
 
   it("rejects duplicate plugin IDs", () => {

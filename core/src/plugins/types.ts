@@ -1,15 +1,33 @@
 import type { EventBus } from "../bus/index.js";
+import type { Logger } from "../logging/index.js";
+import type { ServiceContainer } from "../di/index.js";
+
+export type NexusPluginCompatibility = {
+  nexusCore?: string;
+  pluginApi?: string;
+};
 
 export type NexusPluginManifest = {
   id: string;
   name: string;
   version: string;
+  description?: string;
+  author?: string;
+  entrypoint?: string;
   requiredServices?: string[];
   requiredCapabilities?: string[];
+  compatibility?: NexusPluginCompatibility;
 };
+
+export type PluginServices = Pick<
+  ServiceContainer,
+  "get" | "optional" | "has"
+>;
 
 export type PluginContext = {
   eventBus: EventBus;
+  logger?: Logger;
+  services?: PluginServices;
 };
 
 export type NexusPlugin = {

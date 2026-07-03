@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { InMemoryEventBus, type NexusEvent } from "../bus/index.js";
 import { BasicServiceContainer, config as configKey, eventBus as eventBusKey, loggerFactory as loggerFactoryKey } from "../di/index.js";
+import type { ServiceKey } from "../di/index.js";
 import { BasicConfigLoader, type ConfigLoader, type NexusConfig } from "../config/index.js";
 import { BasicLoggerFactory, type Logger, type LoggerFactory } from "../logging/index.js";
 import { BasicPluginManager, createPluginContext } from "../plugins/index.js";
-import type { NexusPlugin, PluginManager } from "../plugins/index.js";
+import type { NexusPlugin, PluginContext, PluginManager, PluginServices } from "../plugins/index.js";
 import type { RuntimeHandle, RuntimeOptions } from "./types.js";
 
 type RuntimeState = "stopped" | "starting" | "running" | "stopping";
@@ -12,9 +13,10 @@ type RuntimeState = "stopped" | "starting" | "running" | "stopping";
 export class BasicRuntime implements RuntimeHandle {
   private readonly eventBusImpl = new InMemoryEventBus();
   private readonly servicesContainer = new BasicServiceContainer();
-  private readonly pluginManagerImpl = new BasicPluginManager(
-    createPluginContext(this.eventBusImpl),
+  private readonly pluginContext: PluginContext = createPluginContext(
+    this.eventBusImpl,
   );
+  private readonly pluginManagerImpl = new BasicPluginManager(this.pluginContext);
   private readonly configLoader: ConfigLoader;
   private loggerFactoryImpl: LoggerFactory | undefined;
   private loggerImpl: Logger | undefined;
@@ -86,6 +88,8 @@ export class BasicRuntime implements RuntimeHandle {
       this.servicesContainer.register(eventBusKey, this.eventBusImpl);
       this.servicesContainer.register(configKey, this.configImpl);
       this.servicesContainer.register(loggerFactoryKey, this.loggerFactoryImpl);
+      this.pluginContext.logger = this.loggerImpl;
+      this.pluginContext.services = createPluginServices(this.servicesContainer);
 
       await this.pluginManagerImpl.loadAll();
       await this.pluginManagerImpl.startAll();
@@ -138,6 +142,12 @@ export class BasicRuntime implements RuntimeHandle {
     };
   }
 }
+
+const createPluginServices = (services: BasicServiceContainer): PluginServices => ({
+  get: <T>(key: ServiceKey<T>) => services.get(key),
+  optional: <T>(key: ServiceKey<T>) => services.optional(key),
+  has: <T>(key: ServiceKey<T>) => services.has(key),
+});
 
 export const createRuntime = (options?: RuntimeOptions | string): BasicRuntime =>
   new BasicRuntime(

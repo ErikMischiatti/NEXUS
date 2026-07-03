@@ -11,9 +11,11 @@ export { BasicPluginManager, createPluginContext } from "./plugins/index.js";
 
 export type {
   NexusPlugin,
+  NexusPluginCompatibility,
   NexusPluginManifest,
   PluginContext,
   PluginManager,
+  PluginServices,
 } from "./plugins/index.js";
 
 export { BasicConfigLoader, createDefaultConfig } from "./config/index.js";
