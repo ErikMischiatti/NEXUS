@@ -36,6 +36,11 @@ Status:
 
 Create the initial operator-facing shell for composing plugins and workspace views.
 
+Status:
+
+- In progress. The browser-based shell foundation is implemented in `ui/`.
+- The shell is still mock-data-driven and does not yet connect to the runtime or adapters.
+
 Success criteria:
 
 - The shell can host plugin-provided views and basic layout regions.

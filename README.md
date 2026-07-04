@@ -1,6 +1,6 @@
 # NEXUS
 
-NEXUS is a plugin-first robotics operations platform for heterogeneous autonomous systems. The repository currently implements a headless core runtime and a public plugin platform, but it does not yet include an operator UI or adapter ecosystem.
+NEXUS is a plugin-first robotics operations platform for heterogeneous autonomous systems. The repository currently implements a headless core runtime, a public plugin platform, and the first browser-based operator UI shell foundation. Adapters are still out of scope.
 
 ## What Exists Now
 
@@ -23,11 +23,12 @@ NEXUS is a plugin-first robotics operations platform for heterogeneous autonomou
 - local plugin loader
 - plugin lifecycle management through the plugin manager
 - example telemetry plugin package
+- browser-based operator UI shell foundation
 - end-to-end plugin lifecycle coverage in tests
 
 ## What Is Not Implemented Yet
 
-- UI shell
+- full operator UI shell feature set
 - ROS, MQTT, and MAVLink adapters
 - plugin marketplace behavior
 - distributed plugin execution
@@ -38,7 +39,7 @@ NEXUS is a plugin-first robotics operations platform for heterogeneous autonomou
 
 ## Project Maturity
 
-NEXUS is still early-stage. The core runtime and plugin extensibility layer are implemented and tested, but the operator-facing application and adapter ecosystem remain future work.
+NEXUS is still early-stage. The core runtime, plugin extensibility layer, and initial browser operator shell are implemented and tested, but the full operator application and adapter ecosystem remain future work.
 
 ## Documentation
 
