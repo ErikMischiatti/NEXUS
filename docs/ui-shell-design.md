@@ -148,6 +148,8 @@ The shell should not assume that every plugin renders the same kind of content. 
 
 The UI shell should treat plugin panels as composition units inside the workspace rather than as a monolithic application screen.
 
+The current Phase 3.2 implementation treats these panels as static mock metadata entries grouped into dock-like regions such as main, right, and bottom. The shell should make panel selection explicit, but drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
+
 ## 11. Event Stream Panel Concept
 
 The event stream panel is a shell-level view of recent runtime and plugin events.

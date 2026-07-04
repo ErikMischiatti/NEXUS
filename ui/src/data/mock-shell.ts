@@ -21,6 +21,18 @@ export type ShellSidebarItem = {
   state: 'ready' | 'placeholder' | 'mock';
 };
 
+export type ShellPanelRegion = 'main' | 'right' | 'bottom';
+export type ShellPanelStatus = 'ready' | 'placeholder' | 'mock';
+
+export type ShellPanel = {
+  id: string;
+  title: string;
+  pluginId: string;
+  region: ShellPanelRegion;
+  status: ShellPanelStatus;
+  description: string;
+};
+
 export type ShellSnapshot = {
   runtime: {
     name: string;
@@ -31,6 +43,7 @@ export type ShellSnapshot = {
   };
   workspaces: ShellWorkspace[];
   sidebarItems: Record<ShellSectionId, ShellSidebarItem[]>;
+  panels: ShellPanel[];
   events: ShellEvent[];
 };
 
@@ -87,6 +100,48 @@ export const mockShellSnapshot: ShellSnapshot = {
       { title: 'Future actions', detail: 'Reserved for shell commands and shortcuts', state: 'placeholder' },
     ],
   },
+  panels: [
+    {
+      id: 'telemetry-demo',
+      title: 'Telemetry Demo',
+      pluginId: 'example.telemetry.demo',
+      region: 'main',
+      status: 'ready',
+      description: 'Plugin-host placeholder for a future telemetry view.',
+    },
+    {
+      id: 'runtime-events',
+      title: 'Runtime Events',
+      pluginId: 'nexus.core',
+      region: 'bottom',
+      status: 'mock',
+      description: 'Docked event feed for core and plugin lifecycle messages.',
+    },
+    {
+      id: 'mission-placeholder',
+      title: 'Mission Placeholder',
+      pluginId: 'future.mission.plugin',
+      region: 'right',
+      status: 'placeholder',
+      description: 'Placeholder for future mission planning content.',
+    },
+    {
+      id: 'map-placeholder',
+      title: 'Map Placeholder',
+      pluginId: 'future.map.plugin',
+      region: 'main',
+      status: 'placeholder',
+      description: 'Reserved for a future map-oriented plugin surface.',
+    },
+    {
+      id: 'logs-placeholder',
+      title: 'Logs Placeholder',
+      pluginId: 'nexus.core',
+      region: 'right',
+      status: 'mock',
+      description: 'Inspector-style region for log and diagnostic summaries.',
+    },
+  ],
   events: [
     {
       id: 'evt-001',
@@ -120,10 +175,19 @@ export const mockShellSnapshot: ShellSnapshot = {
 };
 
 export const defaultWorkspaceId = mockShellSnapshot.workspaces[0]?.id ?? 'operator-default';
+export const defaultWorkspacePanelId = mockShellSnapshot.panels[0]?.id ?? 'telemetry-demo';
 
 export const getSidebarItemsForSection = (section: ShellSectionId) => mockShellSnapshot.sidebarItems[section] ?? [];
 
 export const getWorkspaceById = (workspaceId: string) =>
   mockShellSnapshot.workspaces.find((workspace) => workspace.id === workspaceId) ?? mockShellSnapshot.workspaces[0];
+
+export const getWorkspacePanels = () => mockShellSnapshot.panels;
+
+export const getWorkspacePanelById = (panelId: string) =>
+  mockShellSnapshot.panels.find((panel) => panel.id === panelId) ?? mockShellSnapshot.panels[0];
+
+export const getWorkspacePanelsByRegion = (region: ShellPanelRegion) =>
+  mockShellSnapshot.panels.filter((panel) => panel.region === region);
 
 export const initialShellSection: ShellSectionId = defaultShellSection;

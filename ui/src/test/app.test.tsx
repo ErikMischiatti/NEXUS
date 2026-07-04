@@ -14,7 +14,7 @@ const renderShell = (initialEntry = '/plugins') =>
   );
 
 describe('Operator UI shell foundation', () => {
-  it('renders the plugin host shell with mock runtime state', () => {
+  it('renders the dockable workspace shell with mock runtime state', () => {
     renderShell();
 
     expect(screen.getByText('NEXUS')).toBeInTheDocument();
@@ -25,21 +25,27 @@ describe('Operator UI shell foundation', () => {
     expect(screen.getByText('Future action area')).toBeDisabled();
   });
 
-  it('switches the sidebar when the activity bar changes section', async () => {
+  it('renders panel tabs and updates the active panel when one is selected', async () => {
     const user = userEvent.setup();
     renderShell('/plugins');
 
-    await user.click(screen.getByRole('link', { name: /Workspaces/ }));
+    const tablist = screen.getByRole('tablist', { name: 'Workspace panels' });
+    expect(within(tablist).getAllByRole('tab')).toHaveLength(5);
+    expect(screen.getByRole('heading', { name: 'Telemetry Demo' })).toBeInTheDocument();
+    expect(within(screen.getByRole('complementary', { name: 'Inspector region' })).getByText('example.telemetry.demo')).toBeInTheDocument();
 
-    expect(screen.getByRole('heading', { name: 'Workspaces' })).toBeInTheDocument();
-    expect(within(screen.getByRole('complementary', { name: 'Workspaces sidebar' })).getByText('Operator Default')).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: /Logs Placeholder panel/ }));
+
+    expect(screen.getByRole('heading', { name: 'Logs Placeholder' })).toBeInTheDocument();
+    expect(screen.getByText('nexus.core')).toBeInTheDocument();
   });
 
-  it('keeps the workspace placeholder ready for future plugin views', () => {
+  it('keeps the plugin-host placeholder and event stream visible', () => {
     renderShell('/plugins');
 
     expect(
-      screen.getByText(/future plugin panels will mount here without redesigning the shell layout/i),
+      screen.getByText(/future plugin views will render here without changing the shell layout/i),
     ).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Event stream panel' })).toBeInTheDocument();
   });
 });

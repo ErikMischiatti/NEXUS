@@ -34,7 +34,7 @@ export const ShellFrame = ({ snapshot }: ShellFrameProps) => {
       <TopBar snapshot={snapshot} />
       <ActivityBar activeSection={activeSection} />
       <Sidebar activeSection={activeSection} />
-      <Workspace />
+      <Workspace snapshot={snapshot} />
       <BottomEventPanel events={snapshot.events} />
     </div>
   );
