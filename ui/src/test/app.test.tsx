@@ -17,12 +17,12 @@ describe('Operator UI shell foundation', () => {
   it('renders the dockable workspace shell with mock runtime state', () => {
     renderShell();
 
-    expect(screen.getByText('NEXUS')).toBeInTheDocument();
-    expect(screen.getByText('Operator Shell')).toBeInTheDocument();
+    expect(screen.getByText('NEXUS Operator Shell')).toBeInTheDocument();
+    expect(screen.getByText('Plugin-host workspace')).toBeInTheDocument();
     expect(screen.getByText('Plugin View Placeholder')).toBeInTheDocument();
-    expect(screen.getByText('Mock Event Stream')).toBeInTheDocument();
+    expect(screen.getByText('Mock Event Bus')).toBeInTheDocument();
     expect(screen.getByText('mock-online')).toBeInTheDocument();
-    expect(screen.getByText('Future action area')).toBeDisabled();
+    expect(screen.getByText('Future actions placeholder')).toBeDisabled();
   });
 
   it('renders panel tabs and updates the active panel when one is selected', async () => {
@@ -32,7 +32,7 @@ describe('Operator UI shell foundation', () => {
     const tablist = screen.getByRole('tablist', { name: 'Workspace panels' });
     expect(within(tablist).getAllByRole('tab')).toHaveLength(5);
     expect(screen.getByRole('heading', { name: 'Telemetry Demo' })).toBeInTheDocument();
-    expect(within(screen.getByRole('complementary', { name: 'Inspector region' })).getByText('example.telemetry.demo')).toBeInTheDocument();
+    expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('example.telemetry.demo')).toBeInTheDocument();
 
     await user.click(screen.getByRole('tab', { name: /Logs Placeholder panel/ }));
 

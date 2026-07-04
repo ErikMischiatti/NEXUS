@@ -7,11 +7,14 @@ export type ShellWorkspace = {
   scope: string;
 };
 
+export type ShellEventSeverity = 'info' | 'success' | 'warning' | 'debug';
+
 export type ShellEvent = {
   id: string;
   type: string;
   source: string;
   timestamp: string;
+  severity: ShellEventSeverity;
   payloadPreview: string;
 };
 
@@ -47,8 +50,8 @@ export type ShellSnapshot = {
   events: ShellEvent[];
 };
 
-const timestamp = (offsetMinutes: number): string =>
-  new Date(Date.now() - offsetMinutes * 60_000).toISOString();
+const baseTimestamp = Date.parse('2026-07-04T12:00:00.000Z');
+const timestamp = (offsetMinutes: number): string => new Date(baseTimestamp - offsetMinutes * 60_000).toISOString();
 
 export const mockShellSnapshot: ShellSnapshot = {
   runtime: {
@@ -148,6 +151,7 @@ export const mockShellSnapshot: ShellSnapshot = {
       type: 'core.runtime.started',
       source: 'nexus-core',
       timestamp: timestamp(6),
+      severity: 'success',
       payloadPreview: '{"runtime":"nexus-runtime","mode":"mock"}',
     },
     {
@@ -155,6 +159,7 @@ export const mockShellSnapshot: ShellSnapshot = {
       type: 'plugin.loaded',
       source: 'plugin-manager',
       timestamp: timestamp(4),
+      severity: 'info',
       payloadPreview: '{"pluginId":"example.telemetry.demo"}',
     },
     {
@@ -162,6 +167,7 @@ export const mockShellSnapshot: ShellSnapshot = {
       type: 'telemetry.normalized.updated',
       source: 'example.telemetry.demo',
       timestamp: timestamp(2),
+      severity: 'info',
       payloadPreview: '{"temperatureC":21.75,"humidityPercent":42.2}',
     },
     {
@@ -169,6 +175,7 @@ export const mockShellSnapshot: ShellSnapshot = {
       type: 'plugin.stopped',
       source: 'plugin-manager',
       timestamp: timestamp(1),
+      severity: 'warning',
       payloadPreview: '{"pluginId":"example.telemetry.demo"}',
     },
   ],

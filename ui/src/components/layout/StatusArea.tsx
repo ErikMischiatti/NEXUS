@@ -4,23 +4,33 @@ import type { ShellSnapshot } from '@/data/mock-shell';
 type StatusAreaProps = {
   runtime: ShellSnapshot['runtime'];
   workspaceName: string;
+  activePanelTitle: string;
+  pluginCount: number;
 };
 
-export const StatusArea = ({ runtime, workspaceName }: StatusAreaProps) => (
-  <section className="status-area" aria-label="Runtime status">
+export const StatusArea = ({ runtime, workspaceName, activePanelTitle, pluginCount }: StatusAreaProps) => (
+  <section className="status-area" aria-label="Shell status">
     <div className="status-area__row">
+      <span className="status-area__heading">Runtime state</span>
       <Badge tone="success">{runtime.status}</Badge>
-      <span className="status-area__label">{runtime.name}</span>
     </div>
-    <div className="status-area__grid">
+    <dl className="status-area__grid">
       <div>
-        <span className="status-area__caption">Workspace</span>
-        <strong>{workspaceName}</strong>
+        <dt>Active workspace</dt>
+        <dd>{workspaceName}</dd>
       </div>
       <div>
-        <span className="status-area__caption">Plugins</span>
-        <strong>{runtime.pluginCount}</strong>
+        <dt>Registered plugins</dt>
+        <dd>{pluginCount}</dd>
       </div>
-    </div>
+      <div>
+        <dt>Active panel</dt>
+        <dd>{activePanelTitle}</dd>
+      </div>
+      <div>
+        <dt>Runtime connection</dt>
+        <dd>{runtime.connection}</dd>
+      </div>
+    </dl>
   </section>
 );

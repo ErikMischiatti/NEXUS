@@ -39,8 +39,8 @@ export const shellSpacing = {
 } as const;
 
 export const shellLayout = {
-  topBarHeight: '4.5rem',
-  activityBarWidth: '4.25rem',
+  topBarHeight: '4.75rem',
+  activityBarWidth: '5rem',
   sidebarWidth: '19rem',
   eventPanelHeight: '13rem',
   statusAreaWidth: '19rem',
@@ -54,10 +54,30 @@ export const shellPanelSizes = {
 } as const;
 
 export const shellSections = [
-  { id: 'plugins', label: 'Plugins', description: 'Hosted plugin views and extension points.' },
-  { id: 'workspaces', label: 'Workspaces', description: 'Operator workspace presets and context.' },
-  { id: 'events', label: 'Events', description: 'Runtime and plugin event stream.' },
-  { id: 'settings', label: 'Settings', description: 'Shell preferences and display options.' },
+  {
+    id: 'plugins',
+    label: 'Plugins',
+    shortLabel: 'PL',
+    description: 'Hosted plugin views and extension points.',
+  },
+  {
+    id: 'workspaces',
+    label: 'Workspaces',
+    shortLabel: 'WS',
+    description: 'Operator workspace presets and context.',
+  },
+  {
+    id: 'events',
+    label: 'Events',
+    shortLabel: 'EV',
+    description: 'Runtime and plugin event stream.',
+  },
+  {
+    id: 'settings',
+    label: 'Settings',
+    shortLabel: 'ST',
+    description: 'Shell preferences and display options.',
+  },
 ] as const;
 
 export type ShellSectionId = (typeof shellSections)[number]['id'];

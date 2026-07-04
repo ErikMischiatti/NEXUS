@@ -9,9 +9,15 @@ type WorkspaceProps = {
 };
 
 const regionLabel = (region: 'main' | 'right' | 'bottom') => {
-  if (region === 'main') return 'Main region';
-  if (region === 'right') return 'Inspector region';
-  return 'Bottom region';
+  if (region === 'main') return 'Main dock';
+  if (region === 'right') return 'Inspector dock';
+  return 'Event dock';
+};
+
+const severityTone = (status: 'ready' | 'placeholder' | 'mock') => {
+  if (status === 'ready') return 'success';
+  if (status === 'mock') return 'accent';
+  return 'warning';
 };
 
 export const Workspace = ({ snapshot }: WorkspaceProps) => {
@@ -19,26 +25,27 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
   const activePanelId = useShellStore((state) => state.activePanelId);
   const setActivePanel = useShellStore((state) => state.setActivePanel);
   const workspace = getWorkspaceById(activeWorkspaceId);
-  const runtimeLabel = snapshot.runtime.connection;
   const panels = getWorkspacePanels();
   const activePanel = getWorkspacePanelById(activePanelId) ?? panels[0];
 
   return (
     <main className="workspace" aria-label="Workspace">
       <Card eyebrow="Workspace" title={workspace?.name ?? 'Workspace'} className="workspace__panel">
-        <p className="nexus-copy">{workspace?.description ?? 'Mock workspace composition.'}</p>
-        <p className="nexus-copy nexus-copy--muted">{workspace?.scope ?? 'Static shell data only'}</p>
-        <p className="nexus-copy nexus-copy--muted">{runtimeLabel}</p>
+        <div className="workspace__summary">
+          <p className="nexus-copy">{workspace?.description ?? 'Mock workspace composition.'}</p>
+          <p className="nexus-copy nexus-copy--muted">{workspace?.scope ?? 'Static shell data only'}</p>
+          <p className="nexus-copy nexus-copy--muted">{snapshot.runtime.connection}</p>
+        </div>
       </Card>
 
       <section className="workspace-dock" aria-label="Dockable workspace">
         <header className="workspace-dock__header">
           <div>
-            <span className="nexus-card__eyebrow">Dockable panels</span>
-            <h2 className="workspace-dock__title">Plugin Host Prototype</h2>
+            <span className="nexus-card__eyebrow">Dockable workspace</span>
+            <h2 className="workspace-dock__title">Plugin host prototype</h2>
           </div>
           <div className="workspace-dock__legend" aria-label="Panel regions">
-            <Badge tone="accent">Static</Badge>
+            <Badge tone="accent">Static panels</Badge>
             <Badge tone="neutral">Mock layout</Badge>
           </div>
         </header>
@@ -53,32 +60,46 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
                 className={`workspace-dock__tab${isActive ? ' is-active' : ''}`}
                 role="tab"
                 aria-selected={isActive}
-                aria-label={`${panel.title} panel, ${panel.region} region`}
+                aria-label={`${panel.title} panel in the ${regionLabel(panel.region)}`}
                 onClick={() => setActivePanel(panel.id)}
               >
-                <span className="workspace-dock__tab-title">{panel.title}</span>
-                <Badge tone={panel.status === 'ready' ? 'success' : panel.status === 'mock' ? 'accent' : 'warning'}>
-                  {panel.status}
-                </Badge>
+                <span className="workspace-dock__tab-copy">
+                  <span className="workspace-dock__tab-title">{panel.title}</span>
+                  <span className="workspace-dock__tab-subtitle">{panel.description}</span>
+                </span>
+                <Badge tone={severityTone(panel.status)}>{panel.status}</Badge>
               </button>
             );
           })}
         </div>
 
         <div className="workspace-dock__grid">
-          <section className="workspace-dock__main" aria-label="Main plugin host region">
-            <Card eyebrow={activePanel?.region ? regionLabel(activePanel.region) : 'Main region'} title="Plugin View Placeholder" className="workspace-dock__panel">
+          <section className="workspace-dock__main" aria-label="Main dock">
+            <Card
+              eyebrow="Main dock"
+              title="Plugin View Placeholder"
+              className="workspace-dock__panel workspace-dock__panel--main"
+            >
               {/* Future plugins will mount React components into this region. */}
               <p className="nexus-copy">
-                This is the dockable plugin-host surface. Future plugin views will render here without changing the shell
-                layout.
+                This dock is the primary plugin-host surface. Future plugin views will render here without changing the
+                shell layout.
               </p>
-              <div className="workspace-dock__slot">Plugin mounting surface</div>
+              <div className="workspace-dock__slot">
+                <div>
+                  <strong>Plugin mounting surface</strong>
+                  <p>Reserved for future React plugin components.</p>
+                </div>
+              </div>
             </Card>
           </section>
 
-          <aside className="workspace-dock__inspector" aria-label="Inspector region">
-            <Card eyebrow="Active panel" title={activePanel?.title ?? 'Plugin Host Placeholder'} className="workspace-dock__panel">
+          <aside className="workspace-dock__inspector" aria-label="Inspector dock">
+            <Card
+              eyebrow="Inspector dock"
+              title={activePanel?.title ?? 'Plugin Host Placeholder'}
+              className="workspace-dock__panel"
+            >
               <div className="workspace-dock__details">
                 <p className="nexus-copy">{activePanel?.description}</p>
                 <dl className="workspace-dock__meta">
@@ -88,14 +109,12 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
                   </div>
                   <div>
                     <dt>Region</dt>
-                    <dd>{activePanel ? regionLabel(activePanel.region) : 'Main region'}</dd>
+                    <dd>{activePanel ? regionLabel(activePanel.region) : 'Main dock'}</dd>
                   </div>
                   <div>
                     <dt>Status</dt>
                     <dd>
-                      <Badge tone={activePanel?.status === 'ready' ? 'success' : activePanel?.status === 'mock' ? 'accent' : 'warning'}>
-                        {activePanel?.status ?? 'placeholder'}
-                      </Badge>
+                      <Badge tone={severityTone(activePanel?.status ?? 'placeholder')}>{activePanel?.status ?? 'placeholder'}</Badge>
                     </dd>
                   </div>
                 </dl>
@@ -111,10 +130,8 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
                       className={`workspace-dock__inventory-item${panel.id === activePanel?.id ? ' is-active' : ''}`}
                       onClick={() => setActivePanel(panel.id)}
                     >
-                      <span>{panel.title}</span>
-                      <Badge tone={panel.status === 'ready' ? 'success' : panel.status === 'mock' ? 'accent' : 'warning'}>
-                        {panel.region}
-                      </Badge>
+                      <span className="workspace-dock__inventory-title">{panel.title}</span>
+                      <span className="workspace-dock__inventory-meta">{regionLabel(panel.region)}</span>
                     </button>
                   </li>
                 ))}
