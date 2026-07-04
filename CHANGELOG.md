@@ -4,10 +4,21 @@ All notable changes to NEXUS will be documented in this file.
 
 This project follows an early-stage development process. Versioning and release conventions will be formalized as the repository matures.
 
+## Phase 2 Completion
+
+### Added
+
+- Plugin SDK contracts
+- Plugin Registry
+- Local descriptor discovery
+- Local Plugin Loader
+- Example telemetry plugin package
+
+### Improved
+
+- Documentation consistency
+- Plugin architecture clarity
+
 ## Unreleased
 
-- Clarified the early-stage repository status and core architecture docs.
-- Documented the Phase 2 plugin SDK and platform extensibility roadmap.
-- Implemented the headless core runtime milestones in `core/`.
-- Added the in-memory event bus, plugin lifecycle, configuration, logging, and service container.
-- Added a demo plugin smoke test and the headless runtime bootstrap path.
+- No unreleased changes recorded yet.

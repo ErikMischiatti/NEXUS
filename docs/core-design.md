@@ -278,7 +278,6 @@ The following items remain open and should be resolved before or during implemen
 - test runner
 - final config file format
 - plugin packaging format
-- whether plugin SDK becomes separate package in Phase 2
 - future adapter boundaries
 
 These are intentionally left open because they depend on the first implementation choices and the level of separation that proves useful in practice.

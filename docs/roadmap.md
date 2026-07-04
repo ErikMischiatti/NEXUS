@@ -1,95 +1,72 @@
 # Roadmap
 
-This roadmap describes the planned development phases for NEXUS. It is intentionally early-stage and may change as the architecture is validated.
+This roadmap reflects the current implementation status of NEXUS. It keeps the phase structure intentionally simple.
 
-## Phase 0: Project Foundation
+## Completed
+
+### Phase 0: Project Foundation
 
 Define the initial repository structure, documentation, project scope, contribution expectations, and architectural vocabulary.
 
-Success criteria:
+Status:
 
-- The repository clearly explains the project scope and early-stage status.
-- Placeholder directories and documentation files establish the intended project shape.
+- Completed.
 
-## Phase 1: Core Shell
+### Phase 1: Core Shell
 
 Implement the headless in-process core runtime and the minimum service boundaries needed to host future plugins, adapters, configuration, workspace state, and internal events.
 
 Status:
 
-- Implemented in `@nexus/core` as a headless, in-process runtime shell.
+- Completed in `@nexus/core` as a headless, in-process runtime shell.
 - Event bus, plugin lifecycle, configuration, logging, service container, and runtime bootstrap are in place.
 
-Success criteria:
+### Phase 2: Plugin SDK
 
-- A minimal headless shell can start without robot integrations.
-- Core service boundaries are documented and implemented in `@nexus/core`.
-
-## Phase 2: Plugin SDK
-
-Define the public plugin SDK, manifest validation, local descriptor discovery, registry behavior, and loader semantics for the headless core.
+Define the public plugin SDK, manifest validation, local descriptor discovery, registry behavior, loader semantics, and example plugin coverage for the headless core.
 
 Status:
 
-- Design documented in `docs/plugin-sdk-design.md`.
-- Implementation is pending.
+- Completed in `@nexus/core`, `docs/`, and `examples/`.
+- The plugin platform now includes the SDK contracts, registry, discovery, loader, and lifecycle integration tests.
+
+## Planned
+
+### Phase 3: Operator UI Shell
+
+Create the initial operator-facing shell for composing plugins and workspace views.
 
 Success criteria:
 
-- A minimal plugin can be discovered, validated, loaded, registered, started, and stopped through public SDK contracts.
-- Plugin lifecycle and compatibility expectations are documented and enforced.
+- The shell can host plugin-provided views and basic layout regions.
+- The UI remains decoupled from specific robots and middleware stacks.
 
-## Phase 3: Telemetry Plugin
+### Phase 4: Adapter Ecosystem
 
-Create an initial telemetry plugin to display normalized state from connected systems. This phase should validate the event bus, capability model, and plugin UI integration.
-
-Success criteria:
-
-- The plugin can display normalized telemetry from a mock or adapter-provided source.
-- The telemetry path validates early event and capability assumptions.
-
-## Phase 4: Map Plugin
-
-Add a map-focused plugin for spatial awareness, vehicle positions, overlays, and mission context. This should remain independent of any single robot type or protocol.
+Add the first adapter integrations for robotics middleware and related external systems.
 
 Success criteria:
 
-- The map plugin can display one or more system positions from normalized data.
-- Map overlays remain decoupled from any single robot middleware.
+- Initial adapter integrations can map external data into normalized platform concepts.
+- Adapter-specific behavior remains isolated from the core and plugin contracts.
 
-## Phase 5: Mission Plugin
+### Phase 5: Mission Workspace
 
-Introduce mission planning and execution concepts that can work across heterogeneous systems. Early work should focus on abstractions before advanced automation.
-
-Success criteria:
-
-- Basic mission concepts are represented without assuming UAV-only workflows.
-- Mission state can be surfaced through the plugin model.
-
-## Phase 6: ROS Adapter
-
-Add a ROS-oriented adapter to validate integration with common robotics middleware while keeping the NEXUS core middleware-independent.
+Introduce workspace concepts for mission-focused operator layouts, saved context, and repeatable workflows.
 
 Success criteria:
 
-- Selected ROS topics and services can be mapped into normalized NEXUS concepts.
-- ROS-specific behavior remains isolated in the adapter layer.
+- Workspaces can represent mission context without hard-coding a single robot type.
+- Workspace state can be restored and composed from plugins.
 
-## Phase 7: MQTT Adapter
+## Future Phases
 
-Add an MQTT adapter for lightweight event, telemetry, and command integration with distributed systems and custom deployments.
+Future phases will extend the platform after the operator shell, adapters, and workspace model are established.
 
-Success criteria:
+Potential areas include:
 
-- MQTT topics can be mapped into telemetry, event, or command channels.
-- Broker configuration remains adapter-specific.
-
-## Phase 8: MAVLink Adapter
-
-Add a MAVLink adapter for UAV and autopilot interoperability while preserving the broader robot-agnostic architecture.
-
-Success criteria:
-
-- Core MAVLink telemetry can be represented through the shared capability and event model.
-- UAV-specific assumptions do not leak into the platform core.
-
+- additional adapters
+- mission-specialized workflows
+- fleet coordination features
+- plugin ecosystem expansion
+- packaging and distribution improvements

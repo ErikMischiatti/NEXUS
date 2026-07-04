@@ -102,12 +102,12 @@ Compatibility is stored on the manifest as a descriptive object rather than a ha
 
 - Plugin packages version themselves independently via `version`.
 - `compatibility.nexusCore` and `compatibility.pluginApi` document version assumptions for later validation and loader policy.
-- Semver interpretation is intentionally deferred until the loader is introduced.
+- Semver interpretation is intentionally deferred until a later compatibility policy is added.
 - The contract should remain conservative: plugins should not be started unless the runtime can establish a supported path through the public SDK.
 
 ## 8. Discovery, Loading, Registration, Lifecycle
 
-These are separate concepts and must remain separate in the SDK. Discovery will populate the registry in a future phase; the registry is metadata only, while the manager owns execution.
+These are separate concepts and must remain separate in the SDK. Discovery can feed the registry through an explicit helper; the registry is metadata only, while the manager owns execution.
 
 ### Discovery
 
