@@ -1,0 +1,12 @@
+{
+  "manifest": {
+    "id": "example.telemetry.demo",
+    "name": "Telemetry Demo",
+    "version": "1.0.0",
+    "description": "Middleware-independent telemetry normalization demo plugin.",
+    "author": "NEXUS",
+    "entrypoint": "./src/index.cjs",
+    "requiredServices": [],
+    "requiredCapabilities": []
+  }
+}

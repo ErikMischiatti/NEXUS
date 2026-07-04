@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { dirname, resolve } from "node:path";
 import { validatePluginManifest } from "../manifest-validation.js";
 import type { NexusPlugin, NexusPluginManifest } from "../types.js";
 import type { PluginDescriptor, PluginDiscoverySource } from "../discovery/index.js";
@@ -170,6 +171,11 @@ const normalizeDescriptor = async (
 
 const loadPluginModule = async (entrypointPath: string): Promise<PluginModule> => {
   try {
+    if (entrypointPath.endsWith(".cjs")) {
+      const require = createRequire(import.meta.url);
+      return require(entrypointPath) as PluginModule;
+    }
+
     return (await import(pathToFileURL(entrypointPath).href)) as PluginModule;
   } catch (error) {
     throw Object.assign(new Error(`Failed to import plugin entrypoint: ${entrypointPath}`), {
@@ -180,12 +186,18 @@ const loadPluginModule = async (entrypointPath: string): Promise<PluginModule> =
 };
 
 const selectPluginExport = (module: PluginModule): unknown => {
-  if (module.default !== undefined) {
-    return module.default;
+  const moduleRecord = module as Record<string, unknown>;
+
+  if (moduleRecord.default !== undefined) {
+    return moduleRecord.default;
   }
 
-  if (typeof module.createPlugin === "function") {
-    return module.createPlugin();
+  if (isRecord(moduleRecord.manifest)) {
+    return moduleRecord;
+  }
+
+  if (typeof moduleRecord.createPlugin === "function") {
+    return (moduleRecord.createPlugin as () => unknown)();
   }
 
   throw Object.assign(new Error("Plugin module must export a default plugin or createPlugin()."), {

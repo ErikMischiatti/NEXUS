@@ -1,0 +1,7 @@
+{
+  "name": "@nexus/telemetry-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Middleware-independent telemetry demo plugin for NEXUS Phase 2."
+}

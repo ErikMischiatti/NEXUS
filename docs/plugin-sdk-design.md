@@ -201,7 +201,7 @@ Example descriptor fields:
   "id": "example.counter",
   "name": "Example Counter",
   "version": "1.0.0",
-  "entrypoint": "./dist/index.js",
+  "entrypoint": "./dist/index.cjs",
   "requiredServices": ["eventBus"],
   "requiredCapabilities": [],
   "compatibility": {
@@ -234,27 +234,25 @@ The loader should fail clearly. It should not silently skip malformed plugins un
 
 ## 12. Example Plugin Package Structure
 
-The example package should be small, test-focused, and SDK-only.
+The canonical Phase 2 example package lives at `examples/plugins/telemetry-demo/`. It should stay small, test-focused, and SDK-only.
 
 Suggested structure:
 
 ```text
-plugins/example-counter/
+examples/plugins/telemetry-demo/
 ├─ nexus.plugin.json
 ├─ package.json
-├─ src/
-│  ├─ index.ts
-│  └─ plugin.ts
-├─ test/
-│  └─ plugin.test.ts
-└─ README.md
+├─ README.md
+└─ src/
+   └─ index.cjs
 ```
 
 Expected characteristics:
 
 - the descriptor is local and static
-- the package exports a plugin object or factory
+- the package exports a default plugin object
 - the plugin uses only public SDK contracts
+- the plugin is middleware-independent and only talks to the public event bus
 - tests exercise the plugin through the SDK boundary
 
 ## 13. Testing Strategy
@@ -279,6 +277,7 @@ Integration tests:
 - start the plugin
 - stop the plugin
 - verify an example plugin can exchange events through the public bus
+- exercise the telemetry demo example package end to end from discovery through lifecycle
 
 Test rules:
 
