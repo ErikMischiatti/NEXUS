@@ -155,7 +155,28 @@ The UI shell should treat plugin panels as composition units inside the workspac
 
 The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface reserved for future plugin views. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
 
-## 11. Event Stream Panel Concept
+## 11. Plugin View And Registry
+
+A plugin view is the React-side UI component that the workspace host can mount for a given plugin ID. It is UI-only, in-memory, and independent from core runtime plugin loading.
+
+The UI-side plugin registry should:
+
+- store `id`, `title`, `pluginId`, and `component`
+- register built-in views at startup
+- resolve a plugin ID to a view definition
+- expose a list for tests or shell diagnostics
+
+Workspace mounting flow:
+
+- the active panel is selected in Zustand UI state
+- the shell reads `panel.pluginId` from the current `RuntimeSnapshot`
+- the registry resolves that plugin ID to a view definition
+- the `Workspace` host mounts the registered React component in the main dock
+- the plugin component reads `RuntimeSnapshot` from the provider
+
+This is not the core runtime plugin loader. It is the UI-side plugin view registry.
+
+## 12. Event Stream Panel Concept
 
 The event stream panel is a shell-level view of recent runtime and plugin events.
 
@@ -170,7 +191,7 @@ It should show:
 
 The event stream is a visibility aid, not an operations log replacement. In Phase 3 it may use mock events or a simulated event feed.
 
-## 12. Mock Data Strategy
+## 13. Mock Data Strategy
 
 Phase 3 should start with static or simulated data.
 
@@ -185,7 +206,7 @@ This means:
 
 Mock data should be deterministic and easy to replace with real runtime bindings later. The shell should be designed so that a future runtime provider can replace the mock snapshot source without rewriting the UI hierarchy or the shell regions.
 
-## 13. Testing Strategy
+## 14. Testing Strategy
 
 Phase 3 should be tested with a small set of focused tests around shell behavior.
 
@@ -200,7 +221,7 @@ Recommended test coverage:
 
 The tests should focus on shell composition and UI behavior, not on plugin implementation details or live runtime integration.
 
-## 14. Accessibility And Responsiveness
+## 15. Accessibility And Responsiveness
 
 The shell should be usable on typical desktop browser widths and still remain functional on narrower windows.
 
@@ -220,7 +241,7 @@ Responsiveness notes:
 - avoid layouts that break when plugin panel counts change
 - make the event stream usable without consuming all available vertical space
 
-## 15. Open Questions
+## 16. Open Questions
 
 The following design questions remain open and should be resolved during implementation:
 

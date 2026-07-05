@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import type { RuntimeSnapshot } from '@/types/runtime-snapshot';
 import { useShellStore } from '@/store/use-shell-store';
+import { pluginViewRegistry } from '@/plugins';
 
 type WorkspaceProps = {
   snapshot: RuntimeSnapshot;
@@ -26,6 +27,8 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
   const activeWorkspace = snapshot.workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? snapshot.workspace;
   const panels = snapshot.panels;
   const activePanel = panels.find((panel) => panel.id === activePanelId) ?? panels[0];
+  const activePluginView = activePanel ? pluginViewRegistry.get(activePanel.pluginId) : undefined;
+  const PluginViewComponent = activePluginView?.component;
 
   return (
     <main className="workspace" aria-label="Workspace">
@@ -71,18 +74,26 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
           <section className="workspace-dock__main" aria-label="Main dock">
             <Card
               eyebrow="Main dock"
-              title="Plugin View Placeholder"
+              title={activePluginView?.title ?? 'Plugin View Placeholder'}
               className="workspace-dock__panel workspace-dock__panel--main"
             >
-              <p className="nexus-copy workspace-dock__description">
-                This region is reserved for future plugin views in {activeWorkspace.sourceLabel}.
-              </p>
-              <div className="workspace-dock__slot">
-                <div>
-                  <strong>Plugin mounting surface</strong>
-                  <p>Reserved for future React plugin components.</p>
+              {PluginViewComponent ? (
+                <div className="workspace-dock__plugin-host">
+                  <PluginViewComponent />
                 </div>
-              </div>
+              ) : (
+                <>
+                  <p className="nexus-copy workspace-dock__description">
+                    This region is reserved for future plugin views in {activeWorkspace.sourceLabel}.
+                  </p>
+                  <div className="workspace-dock__slot">
+                    <div>
+                      <strong>Plugin mounting surface</strong>
+                      <p>Reserved for future React plugin components.</p>
+                    </div>
+                  </div>
+                </>
+              )}
             </Card>
           </section>
 

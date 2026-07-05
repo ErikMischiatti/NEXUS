@@ -38,13 +38,16 @@ describe('Operator UI shell foundation', () => {
   it('renders from the provider snapshot boundary', () => {
     renderShell();
 
-    expect(screen.getByText('NEXUS Core Runtime')).toBeInTheDocument();
+    const topBar = screen.getByRole('banner', { name: 'Shell top bar' });
+
+    expect(screen.getByText('NEXUS Core Runtime', { selector: '.top-bar__eyebrow' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Operator Default' })).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'Workspace' })).toHaveValue('operator-default');
     expect(screen.getByText('Session OP-204 · Mock fleet / mock session')).toBeInTheDocument();
     expect(screen.getByText('mock ready')).toBeInTheDocument();
-    expect(screen.getByText('Static shell data only')).toBeInTheDocument();
-    expect(screen.getByText('Plugin View Placeholder')).toBeInTheDocument();
+    expect(within(topBar).getByText(/Static shell data only/, { selector: '.top-bar__runtime-note' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Main dock' })).getByRole('heading', { name: 'Telemetry Demo', level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Telemetry demo plugin view' })).toBeInTheDocument();
     expect(screen.getByText('Operational log')).toBeInTheDocument();
   });
 
@@ -64,13 +67,14 @@ describe('Operator UI shell foundation', () => {
     expect(screen.getByText('Core Runtime Bridge', { selector: 'strong' })).toBeInTheDocument();
   });
 
-  it('reads panel data from the provider snapshot and keeps selection working', async () => {
+  it('mounts the telemetry plugin view through the registry and keeps selection working', async () => {
     const user = userEvent.setup();
     renderShell('/plugins');
 
     const tablist = screen.getByRole('tablist', { name: 'Workspace panels' });
     expect(within(tablist).getAllByRole('tab')).toHaveLength(5);
     expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('example.telemetry.demo')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Telemetry demo plugin view' })).toBeInTheDocument();
 
     await user.click(screen.getByRole('tab', { name: /Logs Placeholder panel/ }));
 
