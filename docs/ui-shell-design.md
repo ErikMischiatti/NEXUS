@@ -8,7 +8,7 @@ This document defines the design boundary for the UI shell before implementation
 
 ## 2. Phase 3 Scope
 
-Phase 3 covers the initial browser-based operator shell and workspace composition model.
+Phase 3 covers the initial browser-based operator shell and workspace composition model. It is now implemented in mock-only form.
 
 Included:
 
@@ -66,9 +66,9 @@ The core runtime remains responsible for:
 
 The UI shell should consume runtime state through explicit interfaces and mockable data sources. It should not reach into private runtime internals.
 
-Phase 3 now treats `RuntimeSnapshot` as the boundary object between runtime and UI. The shell consumes that snapshot through a mock runtime provider, and the same provider seam can later be replaced by a real runtime binding without changing the component structure.
+Phase 3 treats `RuntimeSnapshot` as the boundary object between runtime and UI. The shell consumes that snapshot through a mock runtime provider, and the same provider seam can later be replaced by a real runtime binding without changing the component structure. The current mock provider owns deterministic runtime updates through a small in-memory adapter.
 
-In Phase 3, the shell should be able to render against mock or simulated runtime data without requiring a live runtime connection.
+In Phase 3, the shell renders against mock or simulated runtime data without requiring a live runtime connection.
 
 ## 6. Relationship With Plugin Platform
 
@@ -153,7 +153,7 @@ The shell should not assume that every plugin renders the same kind of content. 
 
 The UI shell should treat plugin panels as composition units inside the workspace rather than as a monolithic application screen.
 
-The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface reserved for future plugin views. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
+The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface mounted through the UI-side plugin view registry. The first implementation includes the Telemetry Demo plugin view. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
 
 ## 11. Plugin View And Registry
 
@@ -204,7 +204,7 @@ This means:
 - the current provider is mock-only and deterministic
 - mock data should follow the same shapes as the intended runtime data whenever practical
 
-Mock data should be deterministic and easy to replace with real runtime bindings later. The shell should be designed so that a future runtime provider can replace the mock snapshot source without rewriting the UI hierarchy or the shell regions.
+Mock data should be deterministic and easy to replace with real runtime bindings later. The shell should be designed so that a future runtime provider can replace the mock snapshot source without rewriting the UI hierarchy or the shell regions. The current mock runtime adapter can append events, update connection state, and refresh runtime uptime labels in a deterministic way.
 
 ## 14. Testing Strategy
 

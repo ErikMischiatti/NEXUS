@@ -30,21 +30,19 @@ Status:
 - Completed in `@nexus/core`, `docs/`, and `examples/`.
 - The plugin platform now includes the SDK contracts, registry, discovery, loader, and lifecycle integration tests.
 
-## Planned
-
 ### Phase 3: Operator UI Shell
 
 Create the initial operator-facing shell for composing plugins and workspace views.
 
 Status:
 
-- In progress. The browser-based shell foundation is implemented in `ui/`.
-- The shell is still mock-data-driven and does not yet connect to the runtime or adapters.
+- Completed in `ui/` and `docs/`.
+- The browser-first Operator UI Shell is implemented with a mock `RuntimeSnapshot` boundary, a mock runtime provider, a UI-side plugin view registry, and the first Telemetry Demo plugin view.
+- The shell remains mock-only and does not connect to the core runtime or adapters yet.
 
-Success criteria:
+## Planned
 
-- The shell can host plugin-provided views and basic layout regions.
-- The UI remains decoupled from specific robots and middleware stacks.
+A study/review checkpoint will follow before Phase 4 begins.
 
 ### Phase 4: Adapter Ecosystem
 
