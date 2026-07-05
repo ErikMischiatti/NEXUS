@@ -1,19 +1,19 @@
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import type { ShellEvent } from '@/data/mock-shell';
+import type { EventSnapshot } from '@/types/runtime-snapshot';
 
 type BottomEventPanelProps = {
-  events: ShellEvent[];
+  events: EventSnapshot[];
 };
 
-const severityTone = (severity: ShellEvent['severity']) => {
+const severityTone = (severity: EventSnapshot['severity']) => {
   if (severity === 'success') return 'success';
   if (severity === 'warning') return 'warning';
   if (severity === 'debug') return 'neutral';
   return 'accent';
 };
 
-const formatEventTime = (timestamp: string) => timestamp.slice(11, 19);
+const formatEventTime = (time: string) => time.slice(11, 19);
 
 export const BottomEventPanel = ({ events }: BottomEventPanelProps) => (
   <section className="event-panel" aria-label="Event stream panel">
@@ -24,8 +24,8 @@ export const BottomEventPanel = ({ events }: BottomEventPanelProps) => (
           <article key={event.id} className="event-panel__event" role="listitem">
             <div className="event-panel__event-head">
               <div className="event-panel__event-title-block">
-                <time className="event-panel__timestamp" dateTime={event.timestamp}>
-                  {formatEventTime(event.timestamp)}
+                <time className="event-panel__timestamp" dateTime={event.time}>
+                  {formatEventTime(event.time)}
                 </time>
                 <Badge tone={severityTone(event.severity)}>{event.severity}</Badge>
                 <span className="event-panel__type">{event.type}</span>
@@ -38,7 +38,7 @@ export const BottomEventPanel = ({ events }: BottomEventPanelProps) => (
               <span className="event-panel__separator">·</span>
               <span className="event-panel__payload-label">payload preview</span>
             </div>
-            <pre className="event-panel__payload">{event.payloadPreview}</pre>
+            {event.payloadPreview ? <pre className="event-panel__payload">{event.payloadPreview}</pre> : null}
           </article>
         ))}
       </div>

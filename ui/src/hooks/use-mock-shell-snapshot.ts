@@ -1,10 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { mockShellSnapshot } from '@/data/mock-shell';
+import { mockRuntimeSnapshot } from '@/data/mock-runtime-snapshot';
 
-export const useMockShellSnapshot = () =>
-  useQuery({
-    queryKey: ['mock-shell-snapshot'],
-    queryFn: async () => mockShellSnapshot,
-    initialData: mockShellSnapshot,
-    staleTime: Number.POSITIVE_INFINITY,
-  });
+export const useRuntimeSnapshot = () => mockRuntimeSnapshot;
+
+export const useMockShellSnapshot = useRuntimeSnapshot;

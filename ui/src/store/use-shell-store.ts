@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { defaultWorkspaceId, defaultWorkspacePanelId, initialShellSection } from '@/data/mock-shell';
+import { defaultWorkspaceId, defaultWorkspacePanelId, initialShellSection } from '@/data/mock-runtime-snapshot';
 import type { ShellSectionId } from '@/config/design-system';
 
 type ShellStoreState = {

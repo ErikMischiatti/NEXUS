@@ -1,7 +1,11 @@
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { getWorkspacePanelById, getWorkspacePanels } from '@/data/mock-shell';
+import type { RuntimeSnapshot } from '@/types/runtime-snapshot';
 import { useShellStore } from '@/store/use-shell-store';
+
+type WorkspaceProps = {
+  snapshot: RuntimeSnapshot;
+};
 
 const regionLabel = (region: 'main' | 'right' | 'bottom') => {
   if (region === 'main') return 'Main dock';
@@ -15,11 +19,13 @@ const statusTone = (status: 'ready' | 'placeholder' | 'mock') => {
   return 'warning';
 };
 
-export const Workspace = () => {
+export const Workspace = ({ snapshot }: WorkspaceProps) => {
   const activePanelId = useShellStore((state) => state.activePanelId);
   const setActivePanel = useShellStore((state) => state.setActivePanel);
-  const panels = getWorkspacePanels();
-  const activePanel = getWorkspacePanelById(activePanelId) ?? panels[0];
+  const activeWorkspaceId = useShellStore((state) => state.activeWorkspaceId);
+  const activeWorkspace = snapshot.workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? snapshot.workspace;
+  const panels = snapshot.panels;
+  const activePanel = panels.find((panel) => panel.id === activePanelId) ?? panels[0];
 
   return (
     <main className="workspace" aria-label="Workspace">
@@ -28,11 +34,13 @@ export const Workspace = () => {
           <div>
             <span className="nexus-card__eyebrow">Dock surface</span>
             <h2 className="workspace-dock__title">Plugin host prototype</h2>
-            <p className="workspace-dock__lede">Mock plugin panels are organized as editor-like tabs.</p>
+            <p className="workspace-dock__lede">
+              {activeWorkspace.name} is organized as editor-like tabs for mock plugin panels.
+            </p>
           </div>
           <div className="workspace-dock__legend" aria-label="Panel regions">
             <Badge tone="accent">{panels.length} panels</Badge>
-            <Badge tone="neutral">Static layout</Badge>
+            <Badge tone="neutral">{snapshot.connection.label}</Badge>
           </div>
         </header>
 
@@ -66,9 +74,8 @@ export const Workspace = () => {
               title="Plugin View Placeholder"
               className="workspace-dock__panel workspace-dock__panel--main"
             >
-              {/* Future plugins will mount React components into this region. */}
               <p className="nexus-copy workspace-dock__description">
-                This region is reserved for future plugin views.
+                This region is reserved for future plugin views in {activeWorkspace.sourceLabel}.
               </p>
               <div className="workspace-dock__slot">
                 <div>

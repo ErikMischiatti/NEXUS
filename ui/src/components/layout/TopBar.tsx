@@ -1,15 +1,15 @@
 import { Badge } from '@/components/ui/Badge';
-import type { ShellSnapshot } from '@/data/mock-shell';
+import type { RuntimeSnapshot } from '@/types/runtime-snapshot';
 import { useShellStore } from '@/store/use-shell-store';
 
 type TopBarProps = {
-  snapshot: ShellSnapshot;
+  snapshot: RuntimeSnapshot;
 };
 
 export const TopBar = ({ snapshot }: TopBarProps) => {
   const activeWorkspaceId = useShellStore((state) => state.activeWorkspaceId);
   const setActiveWorkspaceId = useShellStore((state) => state.setActiveWorkspaceId);
-  const activeWorkspace = snapshot.workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? snapshot.workspaces[0];
+  const activeWorkspace = snapshot.workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? snapshot.workspace;
 
   return (
     <header className="top-bar" aria-label="Shell top bar">
@@ -18,8 +18,8 @@ export const TopBar = ({ snapshot }: TopBarProps) => {
           NX
         </div>
         <div className="top-bar__titles">
-          <span className="top-bar__eyebrow">NEXUS Operator Shell</span>
-          <h1 className="top-bar__title">Plugin host workspace</h1>
+          <span className="top-bar__eyebrow">{snapshot.runtime.name}</span>
+          <h1 className="top-bar__title">{activeWorkspace.name}</h1>
         </div>
       </div>
 
@@ -39,12 +39,19 @@ export const TopBar = ({ snapshot }: TopBarProps) => {
             </option>
           ))}
         </select>
+        <span className="top-bar__runtime-note">
+          {activeWorkspace.sessionLabel} · {activeWorkspace.sourceLabel}
+        </span>
       </div>
 
       <div className="top-bar__actions">
         <div className="top-bar__runtime" aria-label="Runtime status">
-          <Badge tone="success">{snapshot.runtime.status.replace(/-/g, ' ')}</Badge>
-          <span className="top-bar__runtime-note">{snapshot.runtime.connection}</span>
+          <Badge tone={snapshot.runtime.state === 'ready' ? 'success' : 'warning'}>
+            {snapshot.runtime.mode} {snapshot.runtime.state}
+          </Badge>
+          <span className="top-bar__runtime-note">
+            {snapshot.runtime.uptimeLabel} · {snapshot.connection.label}
+          </span>
         </div>
         <div className="top-bar__toolbar" aria-label="Global actions">
           <button className="top-bar__icon-action" type="button" disabled aria-label="Future action placeholder">

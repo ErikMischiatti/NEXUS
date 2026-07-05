@@ -14,18 +14,35 @@ const renderShell = (initialEntry = '/plugins') =>
   );
 
 describe('Operator UI shell foundation', () => {
-  it('renders the simplified shell structure', () => {
+  it('renders from the runtime snapshot boundary', () => {
     renderShell();
 
-    expect(screen.getByText('NEXUS Operator Shell')).toBeInTheDocument();
-    expect(screen.getByText('Plugin host workspace')).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Workspace' })).toBeInTheDocument();
-    expect(screen.getByText('mock online')).toBeInTheDocument();
+    expect(screen.getByText('NEXUS Core Runtime')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Operator Default' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Workspace' })).toHaveValue('operator-default');
+    expect(screen.getByText('Session OP-204 · Mock fleet / mock session')).toBeInTheDocument();
+    expect(screen.getByText('mock ready')).toBeInTheDocument();
+    expect(screen.getByText('Static shell data only')).toBeInTheDocument();
     expect(screen.getByText('Plugin View Placeholder')).toBeInTheDocument();
     expect(screen.getByText('Operational log')).toBeInTheDocument();
   });
 
-  it('keeps panel selection and inspector details working', async () => {
+  it('reads plugin and workspace inventory from the snapshot', () => {
+    renderShell('/workspaces');
+
+    expect(screen.getByText('Workspace roster')).toBeInTheDocument();
+    expect(screen.getByText('Inspection Mission', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByText('Session TEL-042 · Mock telemetry context')).toBeInTheDocument();
+
+    renderShell('/plugins');
+
+    expect(screen.getByText('Workspace plugins')).toBeInTheDocument();
+    expect(screen.getByText('Telemetry Demo', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByText('Version 0.1.0')).toBeInTheDocument();
+    expect(screen.getByText('Core Runtime Bridge', { selector: 'strong' })).toBeInTheDocument();
+  });
+
+  it('reads panel data from the snapshot and keeps selection working', async () => {
     const user = userEvent.setup();
     renderShell('/plugins');
 
@@ -39,10 +56,12 @@ describe('Operator UI shell foundation', () => {
     expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('nexus.core')).toBeInTheDocument();
   });
 
-  it('keeps the plugin host surface and event log visible', () => {
-    renderShell('/plugins');
+  it('reads event data from the snapshot', () => {
+    renderShell('/events');
 
-    expect(screen.getByText('Plugin mounting surface')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Event stream panel' })).toBeInTheDocument();
+    expect(screen.getByText('core.runtime.started', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByText('plugin.loaded', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByText('telemetry.normalized.updated', { selector: 'strong' })).toBeInTheDocument();
   });
 });
