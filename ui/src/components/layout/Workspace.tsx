@@ -1,12 +1,7 @@
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
-import { getWorkspaceById, getWorkspacePanelById, getWorkspacePanels } from '@/data/mock-shell';
+import { getWorkspacePanelById, getWorkspacePanels } from '@/data/mock-shell';
 import { useShellStore } from '@/store/use-shell-store';
-import type { ShellSnapshot } from '@/data/mock-shell';
-
-type WorkspaceProps = {
-  snapshot: ShellSnapshot;
-};
 
 const regionLabel = (region: 'main' | 'right' | 'bottom') => {
   if (region === 'main') return 'Main dock';
@@ -14,39 +9,30 @@ const regionLabel = (region: 'main' | 'right' | 'bottom') => {
   return 'Event dock';
 };
 
-const severityTone = (status: 'ready' | 'placeholder' | 'mock') => {
+const statusTone = (status: 'ready' | 'placeholder' | 'mock') => {
   if (status === 'ready') return 'success';
   if (status === 'mock') return 'accent';
   return 'warning';
 };
 
-export const Workspace = ({ snapshot }: WorkspaceProps) => {
-  const activeWorkspaceId = useShellStore((state) => state.activeWorkspaceId);
+export const Workspace = () => {
   const activePanelId = useShellStore((state) => state.activePanelId);
   const setActivePanel = useShellStore((state) => state.setActivePanel);
-  const workspace = getWorkspaceById(activeWorkspaceId);
   const panels = getWorkspacePanels();
   const activePanel = getWorkspacePanelById(activePanelId) ?? panels[0];
 
   return (
     <main className="workspace" aria-label="Workspace">
-      <Card eyebrow="Workspace" title={workspace?.name ?? 'Workspace'} className="workspace__panel">
-        <div className="workspace__summary">
-          <p className="nexus-copy">{workspace?.description ?? 'Mock workspace composition.'}</p>
-          <p className="nexus-copy nexus-copy--muted">{workspace?.scope ?? 'Static shell data only'}</p>
-          <p className="nexus-copy nexus-copy--muted">{snapshot.runtime.connection}</p>
-        </div>
-      </Card>
-
       <section className="workspace-dock" aria-label="Dockable workspace">
         <header className="workspace-dock__header">
           <div>
-            <span className="nexus-card__eyebrow">Dockable workspace</span>
+            <span className="nexus-card__eyebrow">Dock surface</span>
             <h2 className="workspace-dock__title">Plugin host prototype</h2>
+            <p className="workspace-dock__lede">Mock plugin panels are organized as editor-like tabs.</p>
           </div>
           <div className="workspace-dock__legend" aria-label="Panel regions">
-            <Badge tone="accent">Static panels</Badge>
-            <Badge tone="neutral">Mock layout</Badge>
+            <Badge tone="accent">{panels.length} panels</Badge>
+            <Badge tone="neutral">Static layout</Badge>
           </div>
         </header>
 
@@ -67,7 +53,7 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
                   <span className="workspace-dock__tab-title">{panel.title}</span>
                   <span className="workspace-dock__tab-subtitle">{panel.description}</span>
                 </span>
-                <Badge tone={severityTone(panel.status)}>{panel.status}</Badge>
+                <Badge tone={statusTone(panel.status)}>{panel.status}</Badge>
               </button>
             );
           })}
@@ -81,9 +67,8 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
               className="workspace-dock__panel workspace-dock__panel--main"
             >
               {/* Future plugins will mount React components into this region. */}
-              <p className="nexus-copy">
-                This dock is the primary plugin-host surface. Future plugin views will render here without changing the
-                shell layout.
+              <p className="nexus-copy workspace-dock__description">
+                This region is reserved for future plugin views.
               </p>
               <div className="workspace-dock__slot">
                 <div>
@@ -98,10 +83,10 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
             <Card
               eyebrow="Inspector dock"
               title={activePanel?.title ?? 'Plugin Host Placeholder'}
-              className="workspace-dock__panel"
+              className="workspace-dock__panel workspace-dock__panel--inspector"
             >
               <div className="workspace-dock__details">
-                <p className="nexus-copy">{activePanel?.description}</p>
+                <p className="nexus-copy workspace-dock__description">{activePanel?.description}</p>
                 <dl className="workspace-dock__meta">
                   <div>
                     <dt>Plugin</dt>
@@ -114,28 +99,13 @@ export const Workspace = ({ snapshot }: WorkspaceProps) => {
                   <div>
                     <dt>Status</dt>
                     <dd>
-                      <Badge tone={severityTone(activePanel?.status ?? 'placeholder')}>{activePanel?.status ?? 'placeholder'}</Badge>
+                      <Badge tone={statusTone(activePanel?.status ?? 'placeholder')}>
+                        {activePanel?.status ?? 'placeholder'}
+                      </Badge>
                     </dd>
                   </div>
                 </dl>
               </div>
-            </Card>
-
-            <Card eyebrow="Panel inventory" title="Dock regions" className="workspace-dock__panel">
-              <ul className="workspace-dock__inventory" aria-label="Available panels">
-                {panels.map((panel) => (
-                  <li key={panel.id}>
-                    <button
-                      type="button"
-                      className={`workspace-dock__inventory-item${panel.id === activePanel?.id ? ' is-active' : ''}`}
-                      onClick={() => setActivePanel(panel.id)}
-                    >
-                      <span className="workspace-dock__inventory-title">{panel.title}</span>
-                      <span className="workspace-dock__inventory-meta">{regionLabel(panel.region)}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
             </Card>
           </aside>
         </div>

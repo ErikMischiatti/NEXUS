@@ -14,38 +14,35 @@ const renderShell = (initialEntry = '/plugins') =>
   );
 
 describe('Operator UI shell foundation', () => {
-  it('renders the dockable workspace shell with mock runtime state', () => {
+  it('renders the simplified shell structure', () => {
     renderShell();
 
     expect(screen.getByText('NEXUS Operator Shell')).toBeInTheDocument();
-    expect(screen.getByText('Plugin-host workspace')).toBeInTheDocument();
+    expect(screen.getByText('Plugin host workspace')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Workspace' })).toBeInTheDocument();
+    expect(screen.getByText('mock online')).toBeInTheDocument();
     expect(screen.getByText('Plugin View Placeholder')).toBeInTheDocument();
-    expect(screen.getByText('Mock Event Bus')).toBeInTheDocument();
-    expect(screen.getByText('mock-online')).toBeInTheDocument();
-    expect(screen.getByText('Future actions placeholder')).toBeDisabled();
+    expect(screen.getByText('Operational log')).toBeInTheDocument();
   });
 
-  it('renders panel tabs and updates the active panel when one is selected', async () => {
+  it('keeps panel selection and inspector details working', async () => {
     const user = userEvent.setup();
     renderShell('/plugins');
 
     const tablist = screen.getByRole('tablist', { name: 'Workspace panels' });
     expect(within(tablist).getAllByRole('tab')).toHaveLength(5);
-    expect(screen.getByRole('heading', { name: 'Telemetry Demo' })).toBeInTheDocument();
     expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('example.telemetry.demo')).toBeInTheDocument();
 
     await user.click(screen.getByRole('tab', { name: /Logs Placeholder panel/ }));
 
     expect(screen.getByRole('heading', { name: 'Logs Placeholder' })).toBeInTheDocument();
-    expect(screen.getByText('nexus.core')).toBeInTheDocument();
+    expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('nexus.core')).toBeInTheDocument();
   });
 
-  it('keeps the plugin-host placeholder and event stream visible', () => {
+  it('keeps the plugin host surface and event log visible', () => {
     renderShell('/plugins');
 
-    expect(
-      screen.getByText(/future plugin views will render here without changing the shell layout/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Plugin mounting surface')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Event stream panel' })).toBeInTheDocument();
   });
 });

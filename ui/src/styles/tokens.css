@@ -28,11 +28,10 @@
   --nexus-radius-sm: 0.5rem;
   --nexus-radius-md: 0.875rem;
   --nexus-radius-lg: 1.125rem;
-  --nexus-top-bar-height: 4.75rem;
-  --nexus-activity-bar-width: 5rem;
+  --nexus-top-bar-height: 4.25rem;
+  --nexus-activity-bar-width: 4.5rem;
   --nexus-sidebar-width: 19rem;
-  --nexus-event-panel-height: 13rem;
-  --nexus-status-area-width: 19rem;
+  --nexus-event-panel-height: 12.5rem;
   --nexus-panel-compact: 18rem;
   --nexus-panel-regular: 24rem;
   --nexus-panel-wide: 32rem;

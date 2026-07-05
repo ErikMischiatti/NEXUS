@@ -12,8 +12,9 @@ Phase 3 covers the initial browser-based operator shell and workspace compositio
 
 Included:
 
-- top-level shell layout
+- compact top-level shell layout
 - operator workspace concept
+- clear ownership boundaries across shell regions
 - plugin panel hosting regions
 - event stream visibility
 - mock data and static state for early development
@@ -110,9 +111,11 @@ The first shell should use a clear multi-region layout that can hold navigation,
 
 Layout expectations:
 
-- top bar for workspace identity, shell actions, and runtime status
-- sidebar for navigation between workspaces, plugins, and event views
-- main workspace for plugin panels and operator-focused content
+- top bar for app title, workspace selection, runtime connection/status, and compact global actions
+- activity bar for primary navigation only
+- sidebar for section-specific content and inventory only
+- main workspace for plugin-host surface and dock tabs
+- inspector dock for the active panel details
 - bottom or docked event stream for recent system and plugin events
 
 The initial shell should be sparse but intentional. It should feel like an operator workspace frame, not a completed ground control station.
@@ -148,7 +151,7 @@ The shell should not assume that every plugin renders the same kind of content. 
 
 The UI shell should treat plugin panels as composition units inside the workspace rather than as a monolithic application screen.
 
-The current Phase 3.2 implementation treats these panels as static mock metadata entries grouped into dock-like regions such as main, right, and bottom. The shell should make panel selection explicit, but drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
+The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface reserved for future plugin views. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
 
 ## 11. Event Stream Panel Concept
 
@@ -159,6 +162,7 @@ It should show:
 - event type
 - source
 - timestamp
+- short description
 - compact payload preview when useful
 - filtering or grouping hooks for later phases
 
@@ -198,11 +202,12 @@ The shell should be usable on typical desktop browser widths and still remain fu
 
 Accessibility notes:
 
-- use semantic landmarks for main regions
+- use semantic landmarks for main regions and toolbar controls
 - ensure keyboard navigation for primary shell actions
 - preserve readable contrast for text and status states
 - do not rely on color alone to signal important state
 - keep focus order predictable across workspace and plugin regions
+- keep each shell region responsible for one kind of information
 
 Responsiveness notes:
 
