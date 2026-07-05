@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import { AppProviders } from '@/providers/AppProviders';
+import { useRuntimeSnapshotAdapter } from '@/runtime/runtime-snapshot-context';
 
 const renderShell = (initialEntry = '/plugins') =>
   render(
@@ -13,8 +14,28 @@ const renderShell = (initialEntry = '/plugins') =>
     </AppProviders>,
   );
 
+const SnapshotControls = () => {
+  const adapter = useRuntimeSnapshotAdapter();
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        adapter.appendEvent({
+          severity: 'warning',
+          source: 'test-harness',
+          type: 'test.shell.event',
+          description: 'Shell event emitted from test',
+          payloadPreview: '{"source":"test"}',
+        })
+      }
+    >
+      Emit shell event
+    </button>
+  );
+};
+
 describe('Operator UI shell foundation', () => {
-  it('renders from the runtime snapshot boundary', () => {
+  it('renders from the provider snapshot boundary', () => {
     renderShell();
 
     expect(screen.getByText('NEXUS Core Runtime')).toBeInTheDocument();
@@ -27,13 +48,14 @@ describe('Operator UI shell foundation', () => {
     expect(screen.getByText('Operational log')).toBeInTheDocument();
   });
 
-  it('reads plugin and workspace inventory from the snapshot', () => {
-    renderShell('/workspaces');
+  it('reads plugin and workspace inventory from the provider snapshot', () => {
+    const first = renderShell('/workspaces');
 
     expect(screen.getByText('Workspace roster')).toBeInTheDocument();
     expect(screen.getByText('Inspection Mission', { selector: 'strong' })).toBeInTheDocument();
     expect(screen.getByText('Session TEL-042 · Mock telemetry context')).toBeInTheDocument();
 
+    first.unmount();
     renderShell('/plugins');
 
     expect(screen.getByText('Workspace plugins')).toBeInTheDocument();
@@ -42,7 +64,7 @@ describe('Operator UI shell foundation', () => {
     expect(screen.getByText('Core Runtime Bridge', { selector: 'strong' })).toBeInTheDocument();
   });
 
-  it('reads panel data from the snapshot and keeps selection working', async () => {
+  it('reads panel data from the provider snapshot and keeps selection working', async () => {
     const user = userEvent.setup();
     renderShell('/plugins');
 
@@ -56,12 +78,23 @@ describe('Operator UI shell foundation', () => {
     expect(within(screen.getByRole('complementary', { name: 'Inspector dock' })).getByText('nexus.core')).toBeInTheDocument();
   });
 
-  it('reads event data from the snapshot', () => {
-    renderShell('/events');
+  it('reads event data from the provider snapshot and updates when the adapter appends an event', async () => {
+    const user = userEvent.setup();
 
-    expect(screen.getByRole('region', { name: 'Event stream panel' })).toBeInTheDocument();
+    render(
+      <AppProviders>
+        <SnapshotControls />
+        <MemoryRouter initialEntries={['/events']}>
+          <App />
+        </MemoryRouter>
+      </AppProviders>,
+    );
+
     expect(screen.getByText('core.runtime.started', { selector: 'strong' })).toBeInTheDocument();
-    expect(screen.getByText('plugin.loaded', { selector: 'strong' })).toBeInTheDocument();
-    expect(screen.getByText('telemetry.normalized.updated', { selector: 'strong' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Emit shell event' }));
+
+    expect(screen.getByText('test.shell.event', { selector: '.event-panel__type' })).toBeInTheDocument();
+    expect(screen.getByText('Shell event emitted from test')).toBeInTheDocument();
   });
 });

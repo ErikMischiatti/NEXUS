@@ -1,5 +1,2 @@
-import { mockRuntimeSnapshot } from '@/data/mock-runtime-snapshot';
-
-export const useRuntimeSnapshot = () => mockRuntimeSnapshot;
-
-export const useMockShellSnapshot = useRuntimeSnapshot;
+export { useRuntimeSnapshot } from '@/runtime/runtime-snapshot-context';
+export { useRuntimeSnapshot as useMockShellSnapshot } from '@/runtime/runtime-snapshot-context';

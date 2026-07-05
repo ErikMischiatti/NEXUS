@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ShellFrame } from '@/components/layout/ShellFrame';
-import { useRuntimeSnapshot } from '@/hooks/use-mock-shell-snapshot';
+import { useRuntimeSnapshot } from '@/runtime/runtime-snapshot-context';
 
 const ShellRoute = () => {
   const snapshot = useRuntimeSnapshot();

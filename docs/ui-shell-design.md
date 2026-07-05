@@ -66,7 +66,7 @@ The core runtime remains responsible for:
 
 The UI shell should consume runtime state through explicit interfaces and mockable data sources. It should not reach into private runtime internals.
 
-Phase 3 now treats `RuntimeSnapshot` as the boundary object between runtime and UI. The shell can render against a mock snapshot during development, and the same shape can later be sourced from a real runtime provider without changing the component structure.
+Phase 3 now treats `RuntimeSnapshot` as the boundary object between runtime and UI. The shell consumes that snapshot through a mock runtime provider, and the same provider seam can later be replaced by a real runtime binding without changing the component structure.
 
 In Phase 3, the shell should be able to render against mock or simulated runtime data without requiring a live runtime connection.
 
@@ -179,7 +179,8 @@ This means:
 - no requirement for live runtime communication on day one
 - no dependency on an always-running event bus connection
 - mock plugin metadata, workspace data, and event stream data are acceptable
-- `RuntimeSnapshot` is the shared mock shape for those data sets
+- `RuntimeSnapshot` is the shared shape for those data sets
+- the current provider is mock-only and deterministic
 - mock data should follow the same shapes as the intended runtime data whenever practical
 
 Mock data should be deterministic and easy to replace with real runtime bindings later. The shell should be designed so that a future runtime provider can replace the mock snapshot source without rewriting the UI hierarchy or the shell regions.
