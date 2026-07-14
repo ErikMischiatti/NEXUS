@@ -35,6 +35,7 @@ export interface PanelSnapshot {
   id: string;
   title: string;
   pluginId: string;
+  workspaceId: string;
   region: PanelRegion;
   status: PanelStatus;
   description: string;

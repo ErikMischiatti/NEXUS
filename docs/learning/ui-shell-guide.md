@@ -220,7 +220,7 @@ The browser loads `index.html`, which contains the root element used by React.
 
 ### 8.2 main.tsx
 
-`ui/src/main.tsx` imports styles, finds the root element, creates the React root, and renders the application.
+`ui/src/main.tsx` imports styles, bootstraps built-in plugin views, finds the root element, creates the React root, and renders the application.
 
 ### 8.3 createRoot()
 
@@ -398,10 +398,11 @@ It receives a `RuntimeSnapshot` prop and renders the page regions.
 ### 12.4 useEffect()
 
 `useEffect()` synchronizes the current URL section into Zustand state.
+The same shell frame also resolves the canonical workspace and panel selection from the `RuntimeSnapshot` and the stored UI ids.
 
 ### 12.5 Synchronizing URL Section with Zustand
 
-The shell keeps the route section and the local active section in sync.
+The shell keeps the route section and the local active section in sync, then realigns the workspace and panel selection after render when the snapshot invalidates the stored ids.
 
 ### 12.6 Layout Composition
 
@@ -503,8 +504,7 @@ Zustand is a lightweight global UI state library.
 Setter functions update the current shell state:
 
 - `setActiveSection()`
-- `setActiveWorkspaceId()`
-- `setActivePanel()`
+- `setSelection({ workspaceId, panelId })`
 
 ### 14.7 Why Zustand Is Used for Local UI State
 
@@ -601,7 +601,7 @@ The registry maps plugin ids to view definitions.
 
 ### 16.7 Telemetry Demo View Registration
 
-`ui/src/plugins/telemetry-demo/index.ts` imports the telemetry demo view definition and registers it in the UI registry.
+`ui/src/plugins/telemetry-demo/index.ts` exports the telemetry demo registration helper used by the explicit bootstrap path.
 
 ### 16.8 Resolving a Plugin View from a Panel
 
@@ -1095,17 +1095,17 @@ This is the current NEXUS UI flow in plain English:
 6. `BrowserRouter` enables route-based shell navigation.
 7. `App` maps the URL to a shell section.
 8. `ShellRoute` reads the snapshot and renders `ShellFrame`.
-9. `ShellFrame` synchronizes the URL section into Zustand.
+9. `ShellFrame` synchronizes the URL section into Zustand and resolves the canonical workspace/panel selection.
 10. `TopBar`, `ActivityBar`, `Sidebar`, `Workspace`, and `BottomEventPanel` render.
-11. `Workspace` resolves the active panel.
-12. `Workspace` looks up the UI plugin view.
+11. `Workspace` receives the canonical panel selection and looks up the UI plugin view.
+12. `Workspace` mounts the selected plugin view or a placeholder.
 13. `TelemetryDemoView` reads the snapshot and renders mock operational content.
 
 ## 29. Interview Explanation
 
 If asked, “How does the NEXUS Operator UI Shell work?”, a concise technical answer is:
 
-NEXUS uses a browser-first React shell built with Vite, React, React Router, TypeScript, and Zustand. The app starts in `main.tsx`, where it finds the root element, creates the React root, and wraps the app in `AppProviders` and `BrowserRouter`. `AppProviders` installs `RuntimeSnapshotProvider`, which currently supplies mock runtime state and a local adapter through React Context. `App.tsx` maps the browser URL to shell sections and `ShellFrame` composes the top bar, activity bar, sidebar, workspace, and event panel. Zustand stores local shell selection state such as active section, workspace, and panel. The `Workspace` component reads the active panel from Zustand, resolves a UI plugin view from the UI-side registry, and mounts the React component when one exists. The shell is mock-only today and is intentionally separated from the real core runtime and plugin lifecycle, which leaves a clean boundary for future runtime binding and adapter integration.
+NEXUS uses a browser-first React shell built with Vite, React, React Router, TypeScript, and Zustand. The app starts in `main.tsx`, where it boots built-in plugin views, finds the root element, creates the React root, and wraps the app in `AppProviders` and `BrowserRouter`. `AppProviders` installs `RuntimeSnapshotProvider`, which currently supplies mock runtime state and a local adapter through React Context. `App.tsx` maps the browser URL to shell sections and `ShellFrame` composes the top bar, activity bar, sidebar, workspace, and event panel. Zustand stores local shell selection state such as active section, workspace, and panel, while `ShellFrame` resolves the canonical workspace/panel selection from the snapshot and syncs the store when the snapshot invalidates the stored ids. The `Workspace` component receives the canonical selection, resolves a UI plugin view from the UI-side registry, and mounts the React component when one exists. The shell is mock-only today and is intentionally separated from the real core runtime and plugin lifecycle, which leaves a clean boundary for future runtime binding and adapter integration.
 
 ## 30. Self-Check Questions
 
@@ -1156,4 +1156,3 @@ That document should deeply analyze:
 - update functions
 - read model vs event stream
 - future real runtime binding
-

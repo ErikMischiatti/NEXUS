@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { defaultWorkspaceId, defaultWorkspacePanelId, initialShellSection } from '@/data/mock-runtime-snapshot';
 import type { ShellSectionId } from '@/config/design-system';
+import type { ShellSelectionState } from '@/components/layout/shell-selection';
 
 type ShellStoreState = {
   activeSection: ShellSectionId;
-  activeWorkspaceId: string;
-  activePanelId: string;
+  activeWorkspaceId?: string;
+  activePanelId?: string;
   setActiveSection: (section: ShellSectionId) => void;
-  setActiveWorkspaceId: (workspaceId: string) => void;
-  setActivePanel: (panelId: string) => void;
+  setSelection: (selection: ShellSelectionState) => void;
 };
 
 export const useShellStore = create<ShellStoreState>((set) => ({
@@ -16,6 +16,5 @@ export const useShellStore = create<ShellStoreState>((set) => ({
   activeWorkspaceId: defaultWorkspaceId,
   activePanelId: defaultWorkspacePanelId,
   setActiveSection: (activeSection) => set({ activeSection }),
-  setActiveWorkspaceId: (activeWorkspaceId) => set({ activeWorkspaceId }),
-  setActivePanel: (activePanelId) => set({ activePanelId }),
+  setSelection: (selection) => set({ activeWorkspaceId: selection.workspaceId, activePanelId: selection.panelId }),
 }));

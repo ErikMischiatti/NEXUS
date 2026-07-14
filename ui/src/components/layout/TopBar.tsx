@@ -1,15 +1,15 @@
 import { Badge } from '@/components/ui/Badge';
+import { resolveShellSelection, type ShellSelection } from '@/components/layout/shell-selection';
 import type { RuntimeSnapshot } from '@/types/runtime-snapshot';
-import { useShellStore } from '@/store/use-shell-store';
 
 type TopBarProps = {
   snapshot: RuntimeSnapshot;
+  selection: ShellSelection;
+  onSelectionChange: (selection: ShellSelection['selection']) => void;
 };
 
-export const TopBar = ({ snapshot }: TopBarProps) => {
-  const activeWorkspaceId = useShellStore((state) => state.activeWorkspaceId);
-  const setActiveWorkspaceId = useShellStore((state) => state.setActiveWorkspaceId);
-  const activeWorkspace = snapshot.workspaces.find((workspace) => workspace.id === activeWorkspaceId) ?? snapshot.workspace;
+export const TopBar = ({ snapshot, selection, onSelectionChange }: TopBarProps) => {
+  const activeWorkspace = selection.workspace;
 
   return (
     <header className="top-bar" aria-label="Shell top bar">
@@ -19,7 +19,7 @@ export const TopBar = ({ snapshot }: TopBarProps) => {
         </div>
         <div className="top-bar__titles">
           <span className="top-bar__eyebrow">{snapshot.runtime.name}</span>
-          <h1 className="top-bar__title">{activeWorkspace.name}</h1>
+          <h1 className="top-bar__title">{activeWorkspace?.name ?? 'No workspace selected'}</h1>
         </div>
       </div>
 
@@ -30,9 +30,20 @@ export const TopBar = ({ snapshot }: TopBarProps) => {
         <select
           id="workspace-selector"
           className="top-bar__selector"
-          value={activeWorkspace?.id}
-          onChange={(event) => setActiveWorkspaceId(event.target.value)}
+          value={activeWorkspace?.id ?? ''}
+          disabled={snapshot.workspaces.length === 0}
+          onChange={(event) =>
+            onSelectionChange(
+              resolveShellSelection(snapshot, {
+                workspaceId: event.target.value,
+                panelId: selection.panel?.id,
+              }).selection,
+            )
+          }
         >
+          {snapshot.workspaces.length === 0 ? (
+            <option value="">No workspaces available</option>
+          ) : null}
           {snapshot.workspaces.map((workspace) => (
             <option key={workspace.id} value={workspace.id}>
               {workspace.name}
@@ -40,7 +51,7 @@ export const TopBar = ({ snapshot }: TopBarProps) => {
           ))}
         </select>
         <span className="top-bar__runtime-note">
-          {activeWorkspace.sessionLabel} · {activeWorkspace.sourceLabel}
+          {activeWorkspace?.sessionLabel ?? 'No session'} · {activeWorkspace?.sourceLabel ?? 'No source'}
         </span>
       </div>
 

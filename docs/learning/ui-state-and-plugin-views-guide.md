@@ -91,11 +91,11 @@ This file defines the shell's Zustand store.
 
 ### 4.2 ui/src/components/layout/ShellFrame.tsx
 
-This file synchronizes route section state into the store and renders the main shell layout.
+This file synchronizes route section state into the store, resolves the canonical workspace/panel selection from `RuntimeSnapshot`, and renders the main shell layout.
 
 ### 4.3 ui/src/components/layout/Workspace.tsx
 
-This file resolves the active workspace and active panel and mounts UI plugin views.
+This file renders the workspace panels using the canonical selection resolved by `ShellFrame`.
 
 ### 4.4 ui/src/plugins/plugin-view.ts
 
@@ -107,11 +107,11 @@ This file stores UI plugin views in memory and resolves them by plugin id.
 
 ### 4.6 ui/src/plugins/index.ts
 
-This file imports built-in UI plugin registrations and re-exports the registry.
+This file re-exports the UI plugin registry and the explicit startup bootstrap used by the app entrypoint.
 
 ### 4.7 ui/src/plugins/telemetry-demo/
 
-This folder contains the Telemetry Demo UI view and its registration.
+This folder contains the Telemetry Demo UI view and its explicit registration helper.
 
 ### 4.8 ui/src/types/runtime-snapshot.ts
 
@@ -128,11 +128,10 @@ It is defined from this state shape:
 ```ts
 type ShellStoreState = {
   activeSection: ShellSectionId;
-  activeWorkspaceId: string;
-  activePanelId: string;
+  activeWorkspaceId?: string;
+  activePanelId?: string;
   setActiveSection: (section: ShellSectionId) => void;
-  setActiveWorkspaceId: (workspaceId: string) => void;
-  setActivePanel: (panelId: string) => void;
+  setSelection: (selection: { workspaceId?: string; panelId?: string }) => void;
 };
 ```
 
@@ -180,8 +179,7 @@ export const useShellStore = create<ShellStoreState>((set) => ({
   activeWorkspaceId: defaultWorkspaceId,
   activePanelId: defaultWorkspacePanelId,
   setActiveSection: (activeSection) => set({ activeSection }),
-  setActiveWorkspaceId: (activeWorkspaceId) => set({ activeWorkspaceId }),
-  setActivePanel: (activePanelId) => set({ activePanelId }),
+  setSelection: (selection) => set({ activeWorkspaceId: selection.workspaceId, activePanelId: selection.panelId }),
 }));
 ```
 
@@ -201,13 +199,9 @@ export const useShellStore = create<ShellStoreState>((set) => ({
 
 Updates the active shell section.
 
-### 5.6 setActiveWorkspaceId()
+### 5.6 setSelection()
 
-Updates the active workspace selection.
-
-### 5.7 setActivePanel()
-
-Updates the active panel selection.
+Updates the workspace and panel selection atomically.
 
 ## 6. URL State vs Zustand State
 
@@ -283,48 +277,50 @@ Why this split is useful:
 
 ### 8.1 Reading activeWorkspaceId
 
-`Workspace` reads the active workspace id from Zustand.
+`ShellFrame` resolves the active workspace from the store selection and the current `RuntimeSnapshot`.
 
 ### 8.2 Finding Active Workspace
 
-It finds the matching workspace in `snapshot.workspaces`.
+The canonical resolver prefers the stored workspace when it is still valid, then falls back to the current snapshot workspace or the first available workspace.
 
 ### 8.3 Fallback to snapshot.workspace
 
-If the selected workspace is not found, the component falls back to `snapshot.workspace`.
+If the selected workspace is not found, the canonical resolver falls back to `snapshot.workspace`.
 
 ### 8.4 Reading activePanelId
 
-`Workspace` reads the active panel id from Zustand.
+`ShellFrame` resolves the active panel from the store selection and the current `RuntimeSnapshot`.
 
 ### 8.5 Finding Active Panel
 
-It looks up the matching panel in `snapshot.panels`.
+The canonical resolver keeps the selected panel only when it belongs to the resolved workspace.
 
 ### 8.6 Fallback to First Panel
 
-If the active panel is missing, it falls back to the first panel.
+If the active panel is missing or belongs to another workspace, the canonical resolver falls back to the first panel in the resolved workspace.
 
 ### 8.7 Why Fallbacks Matter
 
-Fallbacks keep the shell robust when the selection and snapshot are temporarily out of sync.
+Fallbacks keep the shell robust when the selection and snapshot are temporarily out of sync, and the `ShellFrame` syncs the store back to the canonical selection after render with `setSelection({ workspaceId, panelId })`.
 
 Workspace flow:
 
 ```text
-Workspace receives RuntimeSnapshot
+ShellFrame receives RuntimeSnapshot
         ↓
-reads activeWorkspaceId from Zustand
+resolves canonical workspace selection
         ↓
-finds active workspace in snapshot.workspaces
+passes workspace + panel selection to TopBar and Workspace
         ↓
-reads activePanelId from Zustand
+Workspace receives canonical selection
         ↓
-finds active panel in snapshot.panels
+selects workspace panels from the resolved workspace
         ↓
-reads activePanel.pluginId
+selects the active panel from the resolved workspace panels
         ↓
-resolves plugin view from UI Plugin View Registry
+reads `panel.pluginId`
+        ↓
+resolves plugin view from the UI registry
         ↓
 renders plugin component or placeholder
 ```
@@ -347,19 +343,23 @@ The title is the label shown to the user.
 
 `pluginId` links the panel to a conceptual plugin view.
 
-### 9.5 Panel Region
+### 9.5 Workspace ID
+
+`workspaceId` links the panel to its owning workspace in the flat UI snapshot model.
+
+### 9.6 Panel Region
 
 `region` is a layout hint such as `main`, `right`, or `bottom`.
 
-### 9.6 Panel Status
+### 9.7 Panel Status
 
 `status` is a display signal such as `ready`, `placeholder`, or `mock`.
 
-### 9.7 Panel Description
+### 9.8 Panel Description
 
 The description gives human-readable context.
 
-### 9.8 Panel Tabs
+### 9.9 Panel Tabs
 
 The workspace renders each panel as a tab-like button.
 
@@ -465,7 +465,7 @@ The registry uses `Map<string, PluginViewDefinition>` internally for direct plug
 
 ### 13.4 register()
 
-`register()` adds or replaces a view definition for a plugin id.
+`register()` adds a view definition for a plugin id, no-ops for the same contribution, and rejects conflicting duplicate ids.
 
 ### 13.5 get()
 
@@ -477,7 +477,7 @@ The registry uses `Map<string, PluginViewDefinition>` internally for direct plug
 
 ### 13.7 Initial Views
 
-The registry can be seeded at creation time, but in this project it is typically populated by side-effect registration.
+The registry can be seeded at creation time, but in this project it is populated by an explicit startup bootstrap.
 
 ### 13.8 Singleton pluginViewRegistry
 
@@ -495,13 +495,13 @@ Tradeoff:
 
 ### 14.1 ui/src/plugins/index.ts
 
-This file imports `@/plugins/telemetry-demo` so the built-in view registers itself.
+This file exports the startup bootstrap that registers built-in views before the React app renders.
 
 ### 14.2 Side-Effect Import
 
-This is a side-effect import.
+This is an explicit startup step.
 
-It exists so registration happens as soon as the plugins entrypoint is loaded.
+It exists so registration happens before the React app renders.
 
 ### 14.3 Telemetry Demo Registration
 
@@ -1019,19 +1019,19 @@ Tradeoff:
 
 - global module state
 
-### Side-effect registration vs explicit registration list
+### Explicit bootstrap registration vs implicit import registration
 
 Current choice:
 
-- side-effect registration for built-ins
+- explicit bootstrap registration for built-ins
 
 Why:
 
-- convenient and easy to initialize
+  - convenient and easy to initialize
 
 Tradeoff:
 
-- less explicit than a manual list
+  - still requires the bootstrap call to stay near app startup
 
 ### Active panel by ID vs storing full panel object
 
@@ -1172,8 +1172,8 @@ Today this area does not include:
 10. `pluginId` is a conceptual link, not a live connection today.
     - The shell uses it for lookup.
 
-11. Side-effect imports are convenient but should be used carefully.
-    - They hide registration in module loading.
+11. Explicit bootstrap is convenient and should be used carefully.
+    - It keeps registration visible in the app entrypoint.
 
 12. The Telemetry Demo UI view is mock-only today.
     - It reads snapshot data, not live runtime data.
@@ -1257,7 +1257,7 @@ NEXUS uses Zustand for local shell selection state such as active section, activ
 - Why does rendering a plugin view not start a runtime plugin?
 - What does `ComponentType` mean?
 - What does `Record<string, never>` mean?
-- What is side-effect registration?
+- What is explicit bootstrap registration?
 - What is not implemented yet in the workspace system?
 - How would you explain UI state and plugin views in an interview?
 - Why does the shell keep panel selection separate from runtime data?
@@ -1280,4 +1280,3 @@ This final synthesis document will collect:
 - implemented vs future behavior
 - common pitfalls
 - presentation-ready summaries
-

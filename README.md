@@ -39,7 +39,7 @@ NEXUS is a plugin-first robotics operations platform for heterogeneous autonomou
 - shared `RuntimeSnapshot` model
 - mock `RuntimeSnapshotProvider`
 - mock runtime adapter for deterministic UI updates
-- UI-side plugin view registry
+- UI-side plugin view registry with explicit startup bootstrap
 - first Telemetry Demo plugin view
 - mock-only data flow from snapshot to UI
 

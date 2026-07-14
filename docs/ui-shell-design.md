@@ -153,7 +153,7 @@ The shell should not assume that every plugin renders the same kind of content. 
 
 The UI shell should treat plugin panels as composition units inside the workspace rather than as a monolithic application screen.
 
-The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface mounted through the UI-side plugin view registry. The first implementation includes the Telemetry Demo plugin view. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
+The current implementation keeps dock tabs in the workspace, the active panel details in the inspector, and the host surface mounted through the UI-side plugin view registry. The first implementation includes the Telemetry Demo plugin view, which is registered through an explicit bootstrap in the UI entrypoint. Drag-and-drop, detachable windows, and dynamic plugin mounting remain future work.
 
 ## 11. Plugin View And Registry
 
@@ -162,7 +162,7 @@ A plugin view is the React-side UI component that the workspace host can mount f
 The UI-side plugin registry should:
 
 - store `id`, `title`, `pluginId`, and `component`
-- register built-in views at startup
+- register built-in views through an explicit startup bootstrap
 - resolve a plugin ID to a view definition
 - expose a list for tests or shell diagnostics
 

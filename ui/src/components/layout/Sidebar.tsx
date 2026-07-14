@@ -6,6 +6,7 @@ import type { RuntimeSnapshot } from '@/types/runtime-snapshot';
 type SidebarProps = {
   activeSection: ShellSectionId;
   snapshot: RuntimeSnapshot;
+  selectedWorkspaceId?: string;
 };
 
 const itemTone = (state: 'ready' | 'placeholder' | 'mock') => {
@@ -21,8 +22,9 @@ const severityTone = (severity: 'info' | 'success' | 'warning' | 'debug') => {
   return 'accent';
 };
 
-export const Sidebar = ({ activeSection, snapshot }: SidebarProps) => {
+export const Sidebar = ({ activeSection, snapshot, selectedWorkspaceId }: SidebarProps) => {
   const section = shellSections.find((entry) => entry.id === activeSection) ?? shellSections[0];
+  const activeWorkspaceId = selectedWorkspaceId ?? snapshot.workspace?.id;
 
   return (
     <aside className="sidebar" aria-label={`${section.label} sidebar`}>
@@ -56,8 +58,8 @@ export const Sidebar = ({ activeSection, snapshot }: SidebarProps) => {
               <article key={workspace.id} className="sidebar__item" role="listitem">
                 <div className="sidebar__item-header">
                   <strong>{workspace.name}</strong>
-                  <Badge tone={workspace.id === snapshot.workspace.id ? 'success' : 'neutral'}>
-                    {workspace.id === snapshot.workspace.id ? 'active' : 'available'}
+                  <Badge tone={workspace.id === activeWorkspaceId ? 'success' : 'neutral'}>
+                    {workspace.id === activeWorkspaceId ? 'active' : 'available'}
                   </Badge>
                 </div>
                 <p className="nexus-copy nexus-copy--muted">{workspace.description}</p>

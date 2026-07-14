@@ -229,6 +229,7 @@ Represents shell panels:
 - `id`
 - `title`
 - `pluginId`
+- `workspaceId`
 - `region`
 - `status`
 - `description`
@@ -273,7 +274,7 @@ The list of plugin inventory items shown in the shell.
 
 ### 10.5 panels
 
-The list of workspace panels shown in the dock.
+The list of workspace panels shown in the dock. Each panel carries a `workspaceId` so the UI can resolve the active workspace-panel pair without guessing membership from panel order.
 
 ### 10.6 events
 
@@ -1218,4 +1219,3 @@ That document should deeply analyze:
 - Workspace panel mounting
 - Telemetry Demo UI view
 - UI plugin view vs runtime plugin distinction
-
